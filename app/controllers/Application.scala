@@ -1,11 +1,24 @@
 package controllers
 
+import javax.inject.Inject
+
+import com.mohiva.play.silhouette.api.{Environment, Silhouette}
+import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
+import models.{EntryStatus, TimeEntry, User, UserRoles}
+import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import play.api.mvc._
+import services.users.UsersService
+import play.api.libs.concurrent.Execution.Implicits._
 
-object Application extends Controller {
+class Application @Inject() (val messagesApi: MessagesApi,
+                             val env: Environment[User, JWTAuthenticator],
+                             userService: UsersService) extends Silhouette[User, JWTAuthenticator] {
 
-  def index = Action {
+  implicit val userFormat = formatters.json.UserFormats.restFormat
+  implicit val entryFormat = formatters.json.TimeEntryFormats.restFormat
+
+  def index = Action{
     Ok(views.html.index(""))
   }
-
 }

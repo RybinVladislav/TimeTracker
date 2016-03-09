@@ -1,45 +1,45 @@
 package controllers
 
+import javax.inject.Inject
+
+import com.mohiva.play.silhouette.api.{Environment, Silhouette}
+import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import models._
+import play.api.i18n.MessagesApi
 import play.api.libs.json._
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
+import services.users.UsersService
 
 import scala.concurrent.Future
 
-object UsersController extends Controller {
+class UsersController @Inject() (val messagesApi: MessagesApi,
+                                  val env: Environment[User, JWTAuthenticator],
+                                  userService: UsersService) extends Silhouette[User, JWTAuthenticator] {
 
-  def getUser(id: Long) = Action.async { implicit request =>
-    Users.get(id).map(user => Ok(Json.toJson(user)))
+  implicit val userFormat = formatters.json.UserFormats.restFormat
+  implicit val entryFormat = formatters.json.TimeEntryFormats.restFormat
+
+  def getUser(id: Long) = Action.async {
+    userService.getUserByID(id).map{
+      case Some(user) => Ok(Json.toJson(user))
+      case None => Ok(Json.toJson("null"))
+    }
   }
 
-  def getAllUsers = Action.async { implicit request =>
-    Users.listAll.map(users => Ok(Json.toJson(users)))
+  def getAllUsers = Action.async {
+    userService.getAllUsers.map(users => Ok(Json.toJson(users)))
   }
 
-  def createUser() = Action.async(BodyParsers.parse.json) { implicit request =>
+  def createInactiveUser = Action.async(parse.json) { implicit request =>
     request.body.validate[User].fold(
       errors => {
-        Future.successful(BadRequest(Json.obj("status" ->"400", "message" -> JsError.toJson(errors))))
+        Future.successful(BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors))))
       },
       user => {
-        Users.add(user).map(res => Ok(Json.obj("status" ->"OK", "message" -> ("User '"+ user.id +"' created."))))
+        userService.createUser(user).map(user => Ok(Json.toJson(user)))
       }
     )
   }
-
-  def deleteUser(id: Long) = Action.async { implicit request =>
-    Users.delete(id).map(res => Ok(Json.obj("status" ->"OK", "message" -> ("User '"+ res +"' deleted."))))
-  }
-
-  def editUser(id: Long) = Action.async(BodyParsers.parse.json) { implicit request =>
-    request.body.validate[User].fold(
-      errors => {
-        Future.successful(BadRequest(Json.obj("status" ->"400", "message" -> JsError.toJson(errors))))
-      },
-      user => {
-        Users.update(id, user).map(res => Ok(Json.obj("status" ->"OK", "message" -> ("User '"+ id +"' edited."))))
-      }
-    )
-  }
+  def editUser(id: Long) = ???
 }
