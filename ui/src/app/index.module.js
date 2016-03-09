@@ -2,6 +2,6 @@
   'use strict';
 
   angular
-    .module('ui', ['ngResource', 'ui.router', 'ui.bootstrap', 'toastr']);
+    .module('timetracker', ['ngResource', 'ui.router', 'ui.bootstrap', 'toastr']);
 
 })();

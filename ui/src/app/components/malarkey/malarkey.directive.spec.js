@@ -12,7 +12,7 @@
     var vm;
     var el;
 
-    beforeEach(module('ui'));
+    beforeEach(module('timetracker'));
     beforeEach(inject(function($compile, $rootScope, githubContributor, $q, _$log_) {
       $log = _$log_;
 

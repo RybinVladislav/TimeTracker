@@ -2,38 +2,11 @@
   'use strict';
 
   angular
-    .module('ui')
-    .controller('MainController', MainController);
+    .module('timetracker').controller('MainController', function ($scope) {
+    this.transactions = [
+      { amount: 500.00, date: "08/08/2014", description: "Подписка на журнал" },
+      { amount: 150.00, date: "07/08/2015", description: "Кокаин" }
+    ]
+  });
 
-  /** @ngInject */
-  function MainController($timeout, webDevTec, toastr) {
-    var vm = this;
-
-    vm.awesomeThings = [];
-    vm.classAnimation = '';
-    vm.creationDate = 1457548044242;
-    vm.showToastr = showToastr;
-
-    activate();
-
-    function activate() {
-      getWebDevTec();
-      $timeout(function() {
-        vm.classAnimation = 'rubberBand';
-      }, 4000);
-    }
-
-    function showToastr() {
-      toastr.info('Fork <a href="https://github.com/Swiip/generator-gulp-angular" target="_blank"><b>generator-gulp-angular</b></a>');
-      vm.classAnimation = '';
-    }
-
-    function getWebDevTec() {
-      vm.awesomeThings = webDevTec.getTec();
-
-      angular.forEach(vm.awesomeThings, function(awesomeThing) {
-        awesomeThing.rank = Math.random();
-      });
-    }
-  }
 })();

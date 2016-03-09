@@ -3,7 +3,7 @@
   'use strict';
 
   angular
-    .module('ui')
+    .module('timetracker')
     .constant('malarkey', malarkey)
     .constant('moment', moment);
 

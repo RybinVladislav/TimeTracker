@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('ui')
+    .module('timetracker ')
     .run(runBlock);
 
   /** @ngInject */
