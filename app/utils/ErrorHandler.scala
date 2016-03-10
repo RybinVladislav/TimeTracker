@@ -6,10 +6,11 @@ import com.mohiva.play.silhouette.api.SecuredErrorHandler
 import controllers.routes
 import play.api.http.DefaultHttpErrorHandler
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.mvc.Results._
-import play.api.mvc.{ Result, RequestHeader }
+import play.api.mvc.{RequestHeader, Result}
 import play.api.routing.Router
-import play.api.{ OptionalSourceMapper, Configuration }
+import play.api.{Configuration, OptionalSourceMapper}
 
 import scala.concurrent.Future
 
@@ -32,7 +33,7 @@ class ErrorHandler @Inject() (env: play.api.Environment,
     * @return The result to send to the client.
     */
   override def onNotAuthenticated(request: RequestHeader, messages: Messages): Option[Future[Result]] = {
-    Some(Future.successful(Redirect(routes.Application.index())))
+    Some(Future.successful(Unauthorized(Json.obj("message" -> Messages("access.denied")))))
   }
 
   /**
@@ -45,6 +46,6 @@ class ErrorHandler @Inject() (env: play.api.Environment,
     * @return The result to send to the client.
     */
   override def onNotAuthorized(request: RequestHeader, messages: Messages): Option[Future[Result]] = {
-    Some(Future.successful(Redirect(routes.Application.index()).flashing("error" -> Messages("access.denied")(messages))))
+    Some(Future.successful(Forbidden(Json.obj("message" -> Messages("access.denied")))))
   }
 }
