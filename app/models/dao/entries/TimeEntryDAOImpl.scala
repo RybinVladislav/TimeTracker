@@ -2,7 +2,7 @@ package models.dao.entries
 
 import javax.inject.Inject
 
-import models.{EntryStatus, TimeEntry, User}
+import models.{EntryStatus, TimeEntry, User, UserRoles}
 import models.dao.DAOSlick
 import org.joda.time.DateTime
 import play.api.db.slick.DatabaseConfigProvider
@@ -30,7 +30,8 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
     db.run(query.result.headOption).map(resultOption => resultOption.map {
       case (entry, entryUser) =>
         TimeEntry(entry.id,
-          User(entryUser.id, null, entryUser.username, entryUser.firstName, entryUser.lastName, null, null, null, null, null),
+          User(entryUser.id, None, entryUser.username, entryUser.firstName,
+            entryUser.lastName, None, None, None, None, UserRoles.User),
           DateTime.parse(entry.date),
           entry.quantity,
           entry.description,
@@ -97,14 +98,16 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
   override def getAcceptedEntriesByUser(userID: Long): Future[Seq[TimeEntry]] = {
     val query = {
       for {
-        timeEntry <- slickTimeEntries.filter(dbEntry => dbEntry.status === EntryStatus.Accepted.toString && dbEntry.user_id === userID)
+        timeEntry <- slickTimeEntries.filter(dbEntry =>
+          dbEntry.status === EntryStatus.Accepted.toString && dbEntry.user_id === userID)
         timeEntryUser <- slickUsers.filter(_.id === userID)
       } yield (timeEntry, timeEntryUser)
     }
     db.run(query.result).map(resultOption => resultOption.map {
       case (entry, entryUser) =>
         TimeEntry(entry.id,
-          User(entryUser.id, null, entryUser.username, entryUser.firstName, entryUser.lastName, null, null, null, null, null),
+          User(entryUser.id, None, entryUser.username, entryUser.firstName,
+            entryUser.lastName, None, None, None, None, UserRoles.User),
           DateTime.parse(entry.date),
           entry.quantity,
           entry.description,
@@ -120,13 +123,11 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
     * @param newEntry  New entry info.
     * @return The updated entry.
     */
-  override def updateEntry(entryID: Long, newEntry: TimeEntry): Future[String] = {
+  override def updateEntry(entryID: Long, newEntry: TimeEntry): Future[Option[TimeEntry]] = {
     db.run(slickTimeEntries.filter(_.id === entryID)
       .map(oldEntry => (oldEntry.quantity, oldEntry.date, oldEntry.description, oldEntry.status))
       .update((newEntry.quantity, newEntry.date.toString, newEntry.description, newEntry.status.toString)))
-      .map(res => "User successfully edited").recover {
-      case ex: Exception => ex.getCause.getMessage
-    }
+    getEntryByID(entryID)
   }
 
   /**
@@ -157,7 +158,8 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
     db.run(query.result).map(resultOption => resultOption.map {
       case (entry, entryUser) =>
         TimeEntry(entry.id,
-          User(entryUser.id, null, entryUser.username, entryUser.firstName, entryUser.lastName, null, null, null, null, null),
+          User(entryUser.id, None, entryUser.username, entryUser.firstName,
+            entryUser.lastName, None, None, None, None, UserRoles.User),
           DateTime.parse(entry.date),
           entry.quantity,
           entry.description,

@@ -45,7 +45,7 @@ class TimeEntriesServiceImpl @Inject() (timeEntriesDAO: TimeEntryDAO)extends Tim
     * @param entry   New entry info.
     * @return The updated entry.
     */
-  override def updateEntry(entryID: Long, entry: TimeEntry): Future[String] = timeEntriesDAO.updateEntry(entryID, entry)
+  override def updateEntry(entryID: Long, entry: TimeEntry): Future[Option[TimeEntry]] = timeEntriesDAO.updateEntry(entryID, entry)
 
   /**
     * Creates an entry.
