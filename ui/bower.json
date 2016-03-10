@@ -2,6 +2,8 @@
   "name": "timetracker",
   "version": "0.0.0",
   "dependencies": {
+    "angular-animate": "~1.5.0",
+    "angular-cookies": "~1.5.0",
     "angular-resource": "~1.4.2",
     "angular-ui-router": "~0.2.15",
     "bootstrap": "~3.3.5",
