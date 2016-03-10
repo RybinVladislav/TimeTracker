@@ -2,7 +2,8 @@ package controllers
 
 import javax.inject.Inject
 
-import com.mohiva.play.silhouette.api.{Environment, LoginEvent, Silhouette}
+import com.mohiva.play.silhouette.api.exceptions.ProviderException
+import com.mohiva.play.silhouette.api.{Environment, LoginEvent, LogoutEvent, Silhouette}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.{Clock, Credentials}
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
@@ -11,9 +12,10 @@ import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import models.User
 import services.users.UsersService
 import play.api.Configuration
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.Action
+import play.api.libs.concurrent.Execution.Implicits._
 import security.Token
 
 import scala.concurrent.Future
@@ -39,19 +41,32 @@ class AuthController @Inject() (val messagesApi: MessagesApi,
 
   implicit val restCredentialFormat = formatters.json.CredentialFormats.restFormat
 
-  def authenticate = Action.async(parse.json[Credentials]) { implicit request =>
-    credentialsProvider.authenticate(request.body).flatMap { loginInfo =>
-      userService.retrieve(loginInfo).flatMap {
-        case Some(user) => env.authenticatorService.create(user.loginInfo.get).flatMap { authenticator =>
-          env.eventBus.publish(LoginEvent(user, request, request2Messages))
-          env.authenticatorService.init(authenticator).flatMap { token =>
-            env.authenticatorService.embed(token,
-              Ok(Json.toJson(Token(token = token, expiresOn = authenticator.expirationDateTime))))
+  def authenticate = Action.async(parse.json) { implicit request =>
+    request.body.validate[Credentials].map { case cred =>
+      credentialsProvider.authenticate(cred).flatMap { loginInfo =>
+        userService.retrieve(loginInfo).flatMap {
+          case Some(user) => env.authenticatorService.create(user.loginInfo.get).flatMap { authenticator =>
+            env.eventBus.publish(LoginEvent(user, request, request2Messages))
+            env.authenticatorService.init(authenticator).flatMap { token =>
+              env.authenticatorService.embed(token,
+                Ok(Json.toJson(Token(token = token, expiresOn = authenticator.expirationDateTime))))
+            }
           }
+          case None =>
+            Future.failed(new IdentityNotFoundException("Couldn't find user"))
         }
-        case None =>
-          Future.failed(new IdentityNotFoundException("Couldn't find user"))
+      }.recover {
+        case e: ProviderException =>
+          Unauthorized(Json.obj("message" -> Messages("invalid.credentials")))
       }
-    }.recoverWith(exceptionHandler)
+    }.recoverTotal {
+      case error =>
+        Future.successful(Unauthorized(Json.obj("message" -> Messages("invalid.credentials"))))
+    }
+  }
+
+  def signOut = SecuredAction.async { implicit request =>
+    env.eventBus.publish(LogoutEvent(request.identity, request, request2Messages))
+    env.authenticatorService.discard(request.authenticator, Ok(views.html.index("")))
   }
 }

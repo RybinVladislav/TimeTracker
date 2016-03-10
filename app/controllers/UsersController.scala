@@ -9,6 +9,7 @@ import play.api.i18n.MessagesApi
 import play.api.libs.json._
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
+import security.UserData
 import services.users.UsersService
 
 import scala.concurrent.Future
@@ -31,15 +32,31 @@ class UsersController @Inject() (val messagesApi: MessagesApi,
     userService.getAllUsers.map(users => Ok(Json.toJson(users)))
   }
 
-  def createInactiveUser = Action.async(parse.json) { implicit request =>
-    request.body.validate[User].fold(
+  def createUserByManager = Action.async(parse.json) { implicit request =>
+    request.body.validate[UserData].fold(
       errors => {
         Future.successful(BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors))))
       },
-      user => {
-        userService.createUser(user).map(user => Ok(Json.toJson(user)))
+      userdata => {
+        val user = User(0, None, Some(userdata.username),
+          Some(userdata.firstName), Some(userdata.lastName), Some(userdata.address),
+          Some(userdata.phone), Some(userdata.email), Some(userdata.position), UserRoles.User)
+        userService.createInactiveUser(user).map(user => Ok(Json.toJson(user)))
       }
     )
   }
-  def editUser(id: Long) = ???
+
+  def editUser(id: Long) = Action.async(parse.json) { implicit request =>
+    request.body.validate[UserData].fold(
+      errors => {
+        Future.successful(BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors))))
+      },
+      userdata => {
+        val user = User(0, None, None,
+          Some(userdata.firstName), Some(userdata.lastName), Some(userdata.address),
+          Some(userdata.phone), None, Some(userdata.position), UserRoles.User)
+        userService.editUser(id, user).map(user => Ok(Json.toJson(user)))
+      }
+    )
+  }
 }

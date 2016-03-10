@@ -3,7 +3,7 @@
 CREATE TABLE time_entries (
   id SERIAL PRIMARY KEY,
   user_id BIGINT NOT NULL,
-  date varchar(255) NOT NULL,
+  date DATE NOT NULL,
   quantity BIGINT NOT NULL,
   description varchar(255) NOT NULL,
   status varchar(255) NOT NULL

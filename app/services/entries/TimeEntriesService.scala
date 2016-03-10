@@ -58,5 +58,5 @@ trait TimeEntriesService {
     * @param entry New entry info.
     * @return The updated entry.
     */
-  def updateEntry(entryID: Long, entry: TimeEntry): Future[String]
+  def updateEntry(entryID: Long, entry: TimeEntry): Future[Option[TimeEntry]]
 }

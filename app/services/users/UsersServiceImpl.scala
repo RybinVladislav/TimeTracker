@@ -14,13 +14,23 @@ import scala.concurrent.Future
   * @param userDAO The user DAO implementation.
   */
 class UsersServiceImpl @Inject() (userDAO: UserDAO) extends UsersService {
+
   /**
     * Creates a user.
     *
     * @param user The user to create.
     * @return The created user.
     */
-  override def createUser(user: User): Future[User] = userDAO.createUser(user)
+  override def createInactiveUser(user: User): Future[Option[User]] = userDAO.createInactiveUser(user)
+
+  /**
+    * Activates a user.
+    *
+    * @param userID The id of user to activate.
+    * @param loginInfo The login info to activate a user with.
+    * @return The activated user.
+    */
+  def activateUser(userID: Long, loginInfo: LoginInfo): Future[Option[User]] = userDAO.activateUser(userID, loginInfo)
 
   /**
     * Retrieves a user that matches the specified login info.
@@ -44,4 +54,21 @@ class UsersServiceImpl @Inject() (userDAO: UserDAO) extends UsersService {
     * @return The found user or None if no user for the given ID could be found.
     */
   override def getUserByID(userID: Long): Future[Option[User]] = userDAO.getUserByID(userID)
+
+  /**
+    * Finds a user by email.
+    *
+    * @param email The email of the user to find.
+    * @return The found user or None if no user for the given email could be found.
+    */
+  def getUserByEmail(email: String): Future[Option[User]] = userDAO.getUserByEmail(email)
+
+  /**
+    * Updates a user.
+    *
+    * @param userID  Id of user to update.
+    * @param newUser New user data.
+    * @return The updated user.
+    */
+  override def editUser(userID: Long, newUser: User): Future[Option[User]] = userDAO.editUser(userID, newUser)
 }
