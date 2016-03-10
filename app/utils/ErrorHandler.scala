@@ -33,7 +33,7 @@ class ErrorHandler @Inject() (env: play.api.Environment,
     * @return The result to send to the client.
     */
   override def onNotAuthenticated(request: RequestHeader, messages: Messages): Option[Future[Result]] = {
-    Some(Future.successful(Unauthorized(Json.obj("message" -> Messages("access.denied")))))
+    Some(Future.successful(Unauthorized(Json.obj("message" -> "access denied"))))
   }
 
   /**
@@ -46,6 +46,6 @@ class ErrorHandler @Inject() (env: play.api.Environment,
     * @return The result to send to the client.
     */
   override def onNotAuthorized(request: RequestHeader, messages: Messages): Option[Future[Result]] = {
-    Some(Future.successful(Forbidden(Json.obj("message" -> Messages("access.denied")))))
+    Some(Future.successful(Forbidden(Json.obj("message" -> "access denied"))))
   }
 }
