@@ -16,13 +16,11 @@ import scala.concurrent.Future
 /**
   * A secured error handler.
   */
-class ErrorHandler @Inject() (
-                               env: play.api.Environment,
+class ErrorHandler @Inject() (env: play.api.Environment,
                                config: Configuration,
                                sourceMapper: OptionalSourceMapper,
                                router: javax.inject.Provider[Router])
-  extends DefaultHttpErrorHandler(env, config, sourceMapper, router)
-    with SecuredErrorHandler {
+  extends DefaultHttpErrorHandler(env, config, sourceMapper, router) with SecuredErrorHandler {
 
   /**
     * Called when a user is not authenticated.

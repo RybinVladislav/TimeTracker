@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
-import com.mohiva.play.silhouette.api.{Environment, LoginEvent, Silhouette}
+import com.mohiva.play.silhouette.api.{Environment, LoginEvent, LogoutEvent, Silhouette}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.{Clock, Credentials}
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
@@ -14,6 +14,7 @@ import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import play.api.mvc.Action
+import play.api.libs.concurrent.Execution.Implicits._
 import security.Token
 
 import scala.concurrent.Future
@@ -53,5 +54,10 @@ class AuthController @Inject() (val messagesApi: MessagesApi,
           Future.failed(new IdentityNotFoundException("Couldn't find user"))
       }
     }.recoverWith(exceptionHandler)
+  }
+
+  def signOut = SecuredAction.async { implicit request =>
+    env.eventBus.publish(LogoutEvent(request.identity, request, request2Messages))
+    env.authenticatorService.discard(request.authenticator, Ok(views.html.index("")))
   }
 }

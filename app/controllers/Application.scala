@@ -6,10 +6,10 @@ import com.mohiva.play.silhouette.api.{Environment, Silhouette}
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import models.{EntryStatus, TimeEntry, User, UserRoles}
 import play.api.i18n.MessagesApi
-import play.api.libs.json.Json
 import play.api.mvc._
 import services.users.UsersService
-import play.api.libs.concurrent.Execution.Implicits._
+
+import scala.concurrent.Future
 
 class Application @Inject() (val messagesApi: MessagesApi,
                              val env: Environment[User, JWTAuthenticator],
@@ -18,7 +18,7 @@ class Application @Inject() (val messagesApi: MessagesApi,
   implicit val userFormat = formatters.json.UserFormats.restFormat
   implicit val entryFormat = formatters.json.TimeEntryFormats.restFormat
 
-  def index = Action{
-    Ok(views.html.index(""))
+  def index = UserAwareAction.async { implicit request =>
+    Future.successful(Ok(views.html.index(request.identity.toString)))
   }
 }

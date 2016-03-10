@@ -6,6 +6,7 @@ import models.{TimeEntryResponse, User}
 import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsError, Json}
 import play.api.mvc.Action
+import play.api.libs.concurrent.Execution.Implicits._
 import services.responses.ResponsesService
 
 import scala.concurrent.Future
