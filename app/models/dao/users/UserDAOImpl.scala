@@ -147,7 +147,7 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
   def getAllUsers: Future[Seq[User]] = db.run(slickUsers.result).map { dbUserOption =>
     dbUserOption.map { user =>
       User(user.id,
-        null,
+        None,
         user.username,
         user.firstName,
         user.lastName,
