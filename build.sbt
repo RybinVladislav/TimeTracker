@@ -12,7 +12,9 @@ libraryDependencies ++= Seq(cache, ws, specs2 % Test, filters,
                             "com.iheart" %% "ficus" % "1.2.3",
                             "org.postgresql" % "postgresql" % "9.4.1208",
                             "com.typesafe.play" %% "play-slick" % "1.1.1",
-                            "com.typesafe.play" %% "play-slick-evolutions" % "1.1.1")
+                            "com.typesafe.play" %% "play-slick-evolutions" % "1.1.1",
+                            "com.github.tototoshi" %% "slick-joda-mapper" % "2.1.0",
+                            "org.joda" % "joda-convert" % "1.7")
 
 routesGenerator := InjectedRoutesGenerator
 

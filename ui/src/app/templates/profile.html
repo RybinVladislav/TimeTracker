@@ -1,1 +1,70 @@
-YO
+<div class="jumbotron" >
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 col-md-6">
+        <h2>This is your profile.</h2>
+        <h4>In case your manager did something wrong, you can edit your profile.</h4>
+        <hr>
+        <button type="button" ng-if="profile_ctrl.viewProfile"
+                class="btn btn-lg btn-primary" ng-click="profile_ctrl.switchProfile()">Edit profile</button>
+        <button type="button" ng-if="!profile_ctrl.viewProfile"
+                class="btn btn-lg btn-primary" ng-click="profile_ctrl.switchProfile()">Cancel editing</button>
+      </div>
+
+      <div ng-if="!profile_ctrl.viewProfile" class="col-xs-12 col-sm-6 col-md-6">
+        <form method="post" name="profileForm">
+          <div class="form-group">
+            <div class="right-inner-addon">
+              <input class="form-control " name="address" placeholder="Address"
+                     type="text" ng-model="profile_ctrl.address" required>
+              <span class="label label-danger" ng-show="profileForm.address.$error.required">Required!</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="right-inner-addon">
+              <input class="form-control " name="phone" placeholder="Phone format +910 738-88-88"
+                     type="text" ng-model="profile_ctrl.phone"
+                     ng-pattern="/^(\+?(\d{1}|\d{2}|\d{3})[- ]?)?\d{3}[- ]?\d{2}[- ]?\d{2}$/" required>
+              <span class="label label-danger" ng-show="profileForm.phone.$error.required">Required!</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="right-inner-addon">
+              <input class="form-control " name="position" placeholder="Position"
+                     type="text" ng-model="profile_ctrl.position" required>
+              <span class="label label-danger" ng-show="profileForm.position.$error.required">Required!</span>
+            </div>
+          </div>
+          <hr>
+          <br>
+          <button class="btn btn-primary  btn-block"
+                  ng-disabled ="profileForm.$error.required || profileForm.$error.email || profileForm.$invalid"
+                  ng-click="profile_ctrl.submit()">SUBMIT</button>
+        </form>
+      </div>
+
+      <div ng-if="profile_ctrl.viewProfile" class="col-xs-12 col-sm-6 col-md-6">
+        <div class="well well-sm">
+          <div class="row">
+            <div class="col-sm-6 col-md-4">
+              <img src="http://placehold.it/380x500" alt="" class="img-rounded img-responsive" />
+            </div>
+            <div class="col-sm-6 col-md-8">
+              <h4>
+                {{profile_ctrl.user.firstName + ' ' + profile_ctrl.user.lastName}}</h4>
+              <small><cite>{{profile_ctrl.user.address}}<i class="glyphicon glyphicon-map-marker glyph-card">
+              </i></cite></small>
+              <h5>
+                <i class="glyphicon glyphicon-envelope glyph-card"></i>{{profile_ctrl.user.email}}
+                <br />
+                <i class="glyphicon glyphicon-user glyph-card"></i>{{profile_ctrl.user.position}}
+                <br />
+                <i class="glyphicon glyphicon-earphone glyph-card" ></i>{{profile_ctrl.user.phone}}</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

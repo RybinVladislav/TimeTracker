@@ -9,6 +9,7 @@ import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{JsError, Json}
 import play.api.mvc.Action
+import security.UserRights
 import services.entries.TimeEntriesService
 
 import scala.concurrent.Future
@@ -19,7 +20,7 @@ class TimeEntriesController @Inject() (val messagesApi: MessagesApi,
 
   implicit val format = formatters.json.TimeEntryFormats.restFormat
 
-  def createEntry() = Action.async(parse.json) { implicit request =>
+  def createEntry() = SecuredAction(UserRights).async(parse.json) { implicit request =>
     request.body.validate[TimeEntry].fold(
       errors => {
         Future.successful(BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors))))
@@ -30,14 +31,14 @@ class TimeEntriesController @Inject() (val messagesApi: MessagesApi,
     )
   }
 
-  def getEntry(id: Long) = Action.async {
+  def getEntry(id: Long) = SecuredAction.async {
     timeEntriesService.getEntryByID(id).map{
       case Some(entry) => Ok(Json.toJson(entry))
       case None => Ok(Json.toJson("null"))
     }
   }
 
-  def editEntry(id: Long) = Action.async(parse.json) { implicit request =>
+  def editEntry(id: Long) = SecuredAction.async(parse.json) { implicit request =>
     request.body.validate[TimeEntry].fold(
       errors => {
         Future.successful(BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors))))
@@ -52,8 +53,12 @@ class TimeEntriesController @Inject() (val messagesApi: MessagesApi,
     )
   }
 
-  def getPendingEntries = Action.async {
+  def getPendingEntries = SecuredAction.async {
     timeEntriesService.getPendingEntries.map(entries => Ok(Json.toJson(entries)))
+  }
+
+  def getEntriesByUser(userID: Long) = SecuredAction.async {
+    timeEntriesService.getEntriesByUser(userID).map(entries => Ok(Json.toJson(entries)))
   }
 
 }

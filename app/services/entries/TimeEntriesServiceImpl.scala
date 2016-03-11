@@ -31,12 +31,12 @@ class TimeEntriesServiceImpl @Inject() (timeEntriesDAO: TimeEntryDAO)extends Tim
   override def getRejectedEntriesByUser(userID: Long): Future[Seq[TimeEntry]] = timeEntriesDAO.getRejectedEntriesByUser(userID)
 
   /**
-    * Gets the list of all accepted entries by user
+    * Gets the list of all entries by user
     *
     * @param userID The id of the user that created the entries.
-    * @return The sequence of all accepted entries for a user with userID.
+    * @return The sequence of all entries for a user with userID.
     */
-  override def getAcceptedEntriesByUser(userID: Long): Future[Seq[TimeEntry]] = timeEntriesDAO.getAcceptedEntriesByUser(userID)
+  override def getEntriesByUser(userID: Long): Future[Seq[TimeEntry]] = timeEntriesDAO.getEntriesByUser(userID)
 
   /**
     * Updates an existing entry.

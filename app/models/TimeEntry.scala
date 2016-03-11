@@ -1,11 +1,10 @@
 package models
 
-import org.joda.time.DateTime
 import play.api.libs.json._
 
 case class TimeEntry(id: Long,
                      user: User,
-                     date: DateTime,
+                     date: String,
                      quantity: Long,
                      description: String,
                      status: EntryStatus.Value)

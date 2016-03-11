@@ -1,10 +1,10 @@
 package models.dao.entries
 
+import java.sql.Date
 import javax.inject.Inject
 
 import models.{EntryStatus, TimeEntry, User, UserRoles}
 import models.dao.DAOSlick
-import org.joda.time.DateTime
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.concurrent.Execution.Implicits._
 import slick.driver.PostgresDriver.api._
@@ -32,7 +32,7 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
         TimeEntry(entry.id,
           User(entryUser.id, None, entryUser.username, entryUser.firstName,
             entryUser.lastName, None, None, None, None, UserRoles.User),
-          DateTime.parse(entry.date),
+          entry.date.getTime.toString,
           entry.quantity,
           entry.description,
           EntryStatus.withName(entry.status))
@@ -55,8 +55,8 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
     db.run(query.result).map(resultOption => resultOption.map{
       case (entry, entryUser) =>
       TimeEntry(entry.id,
-        User(entryUser.id, null, entryUser.username, entryUser.firstName, entryUser.lastName, null, null, null, null, null),
-        DateTime.parse(entry.date),
+        User(entryUser.id, None, entryUser.username, entryUser.firstName, entryUser.lastName, None, None, None, None, UserRoles.User),
+        entry.date.getTime.toString,
         entry.quantity,
         entry.description,
         EntryStatus.withName(entry.status))
@@ -80,8 +80,8 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
     db.run(query.result).map(resultOption => resultOption.map {
       case (entry, entryUser) =>
         TimeEntry(entry.id,
-          User(entryUser.id, null, entryUser.username, entryUser.firstName, entryUser.lastName, null, null, null, null, null),
-          DateTime.parse(entry.date),
+          User(entryUser.id, None, entryUser.username, entryUser.firstName, entryUser.lastName, None, None, None, None, UserRoles.User),
+          entry.date.getTime.toString,
           entry.quantity,
           entry.description,
           EntryStatus.withName(entry.status))
@@ -95,11 +95,11 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
     * @param userID The id of the user that created the entries.
     * @return The sequence of all accepted entries for a user with userID.
     */
-  override def getAcceptedEntriesByUser(userID: Long): Future[Seq[TimeEntry]] = {
+  override def getEntriesByUser(userID: Long): Future[Seq[TimeEntry]] = {
     val query = {
       for {
         timeEntry <- slickTimeEntries.filter(dbEntry =>
-          dbEntry.status === EntryStatus.Accepted.toString && dbEntry.user_id === userID)
+          dbEntry.user_id === userID)
         timeEntryUser <- slickUsers.filter(_.id === userID)
       } yield (timeEntry, timeEntryUser)
     }
@@ -108,7 +108,7 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
         TimeEntry(entry.id,
           User(entryUser.id, None, entryUser.username, entryUser.firstName,
             entryUser.lastName, None, None, None, None, UserRoles.User),
-          DateTime.parse(entry.date),
+          entry.date.getTime.toString,
           entry.quantity,
           entry.description,
           EntryStatus.withName(entry.status))
@@ -126,7 +126,7 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
   override def updateEntry(entryID: Long, newEntry: TimeEntry): Future[Option[TimeEntry]] = {
     db.run(slickTimeEntries.filter(_.id === entryID)
       .map(oldEntry => (oldEntry.quantity, oldEntry.date, oldEntry.description, oldEntry.status))
-      .update((newEntry.quantity, newEntry.date.toString, newEntry.description, newEntry.status.toString)))
+      .update((newEntry.quantity, new Date(newEntry.date.toLong), newEntry.description, newEntry.status.toString)))
     getEntryByID(entryID)
   }
 
@@ -137,9 +137,9 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
     * @return The created entry.
     */
   override def createEntry(entry: TimeEntry): Future[String] = {
-    val dBTimeEntry = DBTimeEntry(entry.id, entry.user.id, entry.date.toString, entry.quantity, entry.description, entry.status.toString)
+    val dBTimeEntry = DBTimeEntry(entry.id, entry.user.id, new Date(entry.date.toLong), entry.quantity, entry.description, entry.status.toString)
     db.run(slickTimeEntries += dBTimeEntry).map(res => "Entry successfully added").recover {
-      case ex: Exception => ex.getCause.getMessage
+      case ex: Exception => ex.toString
     }
   }
 
@@ -160,7 +160,7 @@ class TimeEntryDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
         TimeEntry(entry.id,
           User(entryUser.id, None, entryUser.username, entryUser.firstName,
             entryUser.lastName, None, None, None, None, UserRoles.User),
-          DateTime.parse(entry.date),
+          entry.date.getTime.toString,
           entry.quantity,
           entry.description,
           EntryStatus.withName(entry.status))

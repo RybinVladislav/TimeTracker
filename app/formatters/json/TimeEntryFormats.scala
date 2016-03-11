@@ -1,7 +1,6 @@
 package formatters.json
 
 import models.{EntryStatus, TimeEntry, User}
-import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
@@ -24,7 +23,7 @@ object TimeEntryFormats {
     val entryReads: Reads[TimeEntry] = (
       (JsPath \ "id").read[Long] and
         (JsPath \ "user").read[User] and
-        (JsPath \ "date").read[DateTime] and
+        (JsPath \ "date").read[String] and
         (JsPath \ "quantity").read[Long] and
         (JsPath \ "description").read[String] and
         (JsPath \ "status").read[EntryStatus.Value]

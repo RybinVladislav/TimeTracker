@@ -10,9 +10,11 @@ POST    /auth/login                 controllers.AuthController.authenticate
 GET     /auth/logout                controllers.SignUpController.signOut
 
 GET     /users                      controllers.UsersController.getAllUsers
-GET     /users/:id                  controllers.UsersController.getUser(id: Long)
 POST    /users                      controllers.UsersController.createUserByManager()
+GET     /users/email/:email         controllers.UsersController.getUserByEmail(email: String)
+GET     /users/:id                  controllers.UsersController.getUser(id: Long)
 PUT     /users/:id                  controllers.UsersController.editUser(id: Long)
+GET     /users/:id/entries          controllers.TimeEntriesController.getEntriesByUser(id: Long)
 
 POST    /entries                    controllers.TimeEntriesController.createEntry()
 GET     /entries/pending            controllers.TimeEntriesController.getPendingEntries
@@ -20,7 +22,7 @@ GET     /entries/:id                controllers.TimeEntriesController.getEntry(i
 PUT     /entries/:id                controllers.TimeEntriesController.editEntry(id: Long)
 GET     /entries/:id/responses      controllers.TimeEntryResponsesController.getResponsesByEntry(id: Long)
 
-POST    /responses                  controllers.TimeEntryResponsesController.createResponse()
+POST    /responses                controllers.TimeEntryResponsesController.createResponse()
 GET     /responses/:id              controllers.TimeEntryResponsesController.getResponse(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path

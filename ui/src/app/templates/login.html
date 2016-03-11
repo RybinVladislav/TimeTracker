@@ -1,22 +1,30 @@
 <div class="container">
-  <div class="row">
-    <div class="col-md-4 col-md-offset-4">
+  <form method="post" name="loginForm">
+    <div class="row">
+      <div class="col-md-4 col-md-offset-4">
 
-      <div class="form-group">
-        <div class="right-inner-addon">
-          <input class="form-control input-lg" placeholder="Email Address" type="text">
+        <div class="form-group">
+          <div class="right-inner-addon">
+            <input class="form-control input-lg" name="einput" placeholder="Email Address"
+                   type="email" ng-model="login_ctrl.email" required>
+            <span class="label label-danger" ng-show="loginForm.einput.$error.required">Required!</span>
+              <span class="label label-danger" ng-show="loginForm.einput.$error.email">Not valid email!</span>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <div class="right-inner-addon">
-          <input class="form-control input-lg" placeholder="Password" type="password">
+        <div class="form-group">
+          <div class="right-inner-addon">
+            <input class="form-control input-lg" name="pass" placeholder="Password"
+                   type="password" ng-model="login_ctrl.password" required>
+            <span class="label label-danger" ng-show="loginForm.pass.$error.required">Required!</span>
+          </div>
         </div>
+        <hr>
+        <br>
+        <button class="btn btn-primary btn-lg btn-block"
+                ng-disabled ="loginForm.$error.required || loginForm.$error.email"
+                ng-click="login_ctrl.submit()">LOGIN</button>
       </div>
-
-      <hr>
-      <br>
-      <button class="btn btn-primary btn-lg btn-block">LOGIN</button>
     </div>
-  </div>
+  </form>
 </div>
