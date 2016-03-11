@@ -29,12 +29,12 @@ trait TimeEntryDAO {
   def getPendingEntries: Future[Seq[TimeEntry]]
 
   /**
-    * Gets the list of all accepted entries by user
+    * Gets the list of all entries by user
     *
     * @param userID The id of the user that created the entries.
-    * @return The sequence of all accepted entries for a user with userID.
+    * @return The sequence of all entries for a user with userID.
     */
-  def getAcceptedEntriesByUser(userID: Long): Future[Seq[TimeEntry]]
+  def getEntriesByUser(userID: Long): Future[Seq[TimeEntry]]
 
   /**
     * Gets the list of all rejected entries by user

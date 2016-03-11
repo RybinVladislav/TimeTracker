@@ -61,12 +61,7 @@ class AuthController @Inject() (val messagesApi: MessagesApi,
       }
     }.recoverTotal {
       case error =>
-        Future.successful(Unauthorized(Json.obj("message" -> Messages("invalid.credentials"))))
+        Future.successful(Unauthorized(Json.obj("message" -> "kek")))
     }
-  }
-
-  def signOut = SecuredAction.async { implicit request =>
-    env.eventBus.publish(LogoutEvent(request.identity, request, request2Messages))
-    env.authenticatorService.discard(request.authenticator, Ok(views.html.index("")))
   }
 }

@@ -19,6 +19,6 @@ class Application @Inject() (val messagesApi: MessagesApi,
   implicit val entryFormat = formatters.json.TimeEntryFormats.restFormat
 
   def index = UserAwareAction.async { implicit request =>
-    Future.successful(Ok(views.html.index(DateTime.now.toInstant.toString)))
+    Future.successful(Ok(views.html.index(request.identity.toString)))
   }
 }

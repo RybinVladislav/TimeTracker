@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="userlist" ng-if="!users_ctrl.detailedView">
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="jumbotron"><h4>Here you can see every user in our system.</h4><h4> Click an item to see detailed info.</h4>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="list-group">
+          <button type="button" class="list-group-item" ng-repeat="user in users_ctrl.users"
+                 ng-click="users_ctrl.showProfile(user)">{{user.firstName + ' '+ user.lastName}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="user_profile" ng-if="users_ctrl.detailedView">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-md-offset-3">
+      <div class="well well-sm">
+        <div class="row">
+          <div class="col-sm-6 col-md-4">
+            <img src="http://placehold.it/380x500" alt="" class="img-rounded img-responsive" />
+          </div>
+          <div class="col-sm-6 col-md-8">
+            <h4>
+              {{users_ctrl.detailedUser.firstName + ' ' + users_ctrl.detailedUser.lastName}}</h4>
+            <small><cite>{{users_ctrl.detailedUser.address}}<i class="glyphicon glyphicon-map-marker glyph-card">
+            </i></cite></small>
+            <h5>
+              <i class="glyphicon glyphicon-envelope glyph-card"></i>{{users_ctrl.detailedUser.email}}
+              <br />
+              <i class="glyphicon glyphicon-user glyph-card"></i>{{users_ctrl.detailedUser.position}}
+              <br />
+              <i class="glyphicon glyphicon-earphone glyph-card" ></i>{{users_ctrl.detailedUser.phone}}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class ="col-md-3">
+      <div class="jumbotron">
+      <button class="btn btn-primary  btn-block"
+              ng-click="users_ctrl.showList()">Go Back</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+

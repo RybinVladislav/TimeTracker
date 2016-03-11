@@ -1,13 +1,8 @@
 (function() {
   'use strict';
 
-  angular.module('timetracker').controller('MainController', function ($scope, $rootScope) {
-    var vm = this;
+  angular.module('timetracker').controller('MainController', function () {
 
-    vm.getOrig = function() {
-      return $rootScope.user;
-    };
-    
   });
 
 })();

@@ -7,9 +7,9 @@ import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import models._
 import play.api.i18n.MessagesApi
 import play.api.libs.json._
-import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
-import security.UserData
+import play.api.mvc.Action
+import security.{ManagerRights, UserData}
 import services.users.UsersService
 
 import scala.concurrent.Future
@@ -21,18 +21,25 @@ class UsersController @Inject() (val messagesApi: MessagesApi,
   implicit val userFormat = formatters.json.UserFormats.restFormat
   implicit val entryFormat = formatters.json.TimeEntryFormats.restFormat
 
-  def getUser(id: Long) = Action.async {
+  def getUser(id: Long) = SecuredAction.async {
     userService.getUserByID(id).map{
       case Some(user) => Ok(Json.toJson(user))
       case None => Ok(Json.toJson("null"))
     }
   }
 
-  def getAllUsers = Action.async {
+  def getUserByEmail(email: String) = SecuredAction.async {
+    userService.getUserByEmail(email).map{
+      case Some(user) => Ok(Json.toJson(user))
+      case None => NotFound(Json.toJson("null"))
+    }
+  }
+
+  def getAllUsers = SecuredAction.async {
     userService.getAllUsers.map(users => Ok(Json.toJson(users)))
   }
 
-  def createUserByManager = Action.async(parse.json) { implicit request =>
+  def createUserByManager = SecuredAction(ManagerRights).async(parse.json) { implicit request =>
     request.body.validate[UserData].fold(
       errors => {
         Future.successful(BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors))))
@@ -46,7 +53,7 @@ class UsersController @Inject() (val messagesApi: MessagesApi,
     )
   }
 
-  def editUser(id: Long) = Action.async(parse.json) { implicit request =>
+  def editUser(id: Long) = SecuredAction.async(parse.json) { implicit request =>
     request.body.validate[UserData].fold(
       errors => {
         Future.successful(BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors))))

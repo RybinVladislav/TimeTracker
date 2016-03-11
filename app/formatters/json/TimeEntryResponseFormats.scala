@@ -23,7 +23,7 @@ object TimeEntryResponseFormats {
       (JsPath \ "id").read[Long] and
         (JsPath \ "manager").read[User] and
         (JsPath \ "entry_id").read[Long] and
-        (JsPath \ "date").read[DateTime] and
+        (JsPath \ "date").read[String] and
         (JsPath \ "response").read[String]
       )(TimeEntryResponse.apply _)
 

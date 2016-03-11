@@ -1,0 +1,38 @@
+<div class="container">
+
+  <div class="pending_entries_list">
+    <div class="row">
+      <div class="col-md-5 col-md-offset-2">
+        <h3>Pending Entries</h3>
+        <div class="list-group">
+          <button type="button" class="list-group-item" ng-repeat="entry in pending_entries_ctrl.entries"
+                  ng-click="pending_entries_ctrl.showDetailed(entry)">
+                  {{entry.quantity}} hours at {{entry.date | date:'yyyy-MM-dd'}} on task:"{{entry.description}}"
+            <span class="badge">{{entry.user.firstName}} {{entry.user.lastName}}</span>
+          </button>
+        </div>
+      </div>
+      <div class ="col-md-5" ng-if="pending_entries_ctrl.isDetailed()">
+        <h3>Approval form:</h3>
+        <div class="jumbotron">
+          <h3>Author: {{pending_entries_ctrl.detailedEntry.user.firstName}}
+            {{pending_entries_ctrl.detailedEntry.user.lastName}}
+          </h3>
+          <h5>
+            Spent {{pending_entries_ctrl.detailedEntry.quantity}} hours
+            on {{pending_entries_ctrl.detailedEntry.date | date:'yyyy-MM-dd'}}
+            doing task:"{{pending_entries_ctrl.detailedEntry.description}}"
+          </h5>
+          <hr>
+          <input class="form-control input" placeholder="Your comment"
+                 type="text" ng-model="pending_entries_ctrl.response" required>
+          <br>
+          <div class="btn-group">
+            <button class="btn btn-danger btn-lg" ng-click="pending_entries_ctrl.reject()">Reject</button>
+            <button class="btn btn-success btn-lg" ng-click="pending_entries_ctrl.accept()">Accept</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

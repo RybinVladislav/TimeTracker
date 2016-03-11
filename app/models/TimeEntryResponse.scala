@@ -15,5 +15,5 @@ import org.joda.time.DateTime
 case class TimeEntryResponse(id: Long,
                              manager: User,
                              entry_id: Long,
-                             date: DateTime,
+                             date: String,
                              response: String)

@@ -20,7 +20,7 @@ object UserFormats {
         "phone" -> user.phone,
         "email" -> user.email,
         "position" -> user.position,
-        "user_role" -> user.userRole
+        "userRole" -> user.userRole
       )
     }
 
@@ -34,7 +34,7 @@ object UserFormats {
         (JsPath \ "phone").readNullable[String] and
         (JsPath \ "email").readNullable[String] and
         (JsPath \ "position").readNullable[String] and
-        (JsPath \ "user_role").read[UserRoles.Value]
+        (JsPath \ "userRole").read[UserRoles.Value]
       )(User.apply _)
 
     Format(userReads, userWrites)
