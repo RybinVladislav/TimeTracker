@@ -1,0 +1,28 @@
+.browsehappy {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #000;
+  padding: 0.2em 0;
+}
+
+.thumbnail {
+  height: 200px;
+}
+
+.thumbnail img.pull-right {
+  width: 50px;
+}
+
+.centered_col {
+  text-align: center;
+}
+
+.glyph-card {  margin-bottom: 10px;margin-right: 10px;}
+
+small {
+  display: block;
+  line-height: 1.428571429;
+  color: #999;
+}
+
+.jumbotron {}

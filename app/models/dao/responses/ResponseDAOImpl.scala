@@ -1,8 +1,9 @@
 package models.dao.responses
 
+import java.sql.Date
 import javax.inject.Inject
 
-import models.{ TimeEntryResponse, User}
+import models.{TimeEntryResponse, User, UserRoles}
 import models.dao.DAOSlick
 import org.joda.time.DateTime
 import play.api.db.slick.DatabaseConfigProvider
@@ -20,7 +21,7 @@ class ResponseDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     * @return The created response.
     */
   override def createResponse(response: TimeEntryResponse): Future[String] = {
-    val dBResponse = DBTimeEntryResponse(response.id, response.manager.id, response.entry_id, response.date.toString, response.response)
+    val dBResponse = DBTimeEntryResponse(response.id, response.manager.id, response.entry_id, new Date(response.date.toLong), response.response)
     db.run(slickResponses += dBResponse).map(res => "Response successfully added").recover {
       case ex: Exception => ex.getCause.getMessage
     }
@@ -42,9 +43,9 @@ class ResponseDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(query.result).map(resultOption => resultOption.map {
       case (response, manager) =>
         TimeEntryResponse(response.id,
-          User(manager.id, null, manager.username, manager.firstName, manager.lastName, null, null, null, null, null),
+          User(manager.id, None, manager.username, manager.firstName, manager.lastName, None, None, None, None, UserRoles.Manager),
           response.entry_id,
-          DateTime.parse(response.date),
+          response.date.getTime.toString,
           response.response)
     }
     )
@@ -66,9 +67,9 @@ class ResponseDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(query.result.headOption).map(resultOption => resultOption.map {
       case (response, manager) =>
         TimeEntryResponse(response.id,
-          User(manager.id, null, manager.username, manager.firstName, manager.lastName, null, null, null, null, null),
+          User(manager.id, None, manager.username, manager.firstName, manager.lastName, None, None, None, None, UserRoles.Manager),
           response.entry_id,
-          DateTime.parse(response.date),
+          response.date.getTime.toString,
           response.response)
     }
     )

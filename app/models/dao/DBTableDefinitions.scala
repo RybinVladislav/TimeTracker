@@ -1,5 +1,7 @@
 package models.dao
 
+import java.sql.Date
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import slick.lifted.Tag
 import slick.driver.PostgresDriver.api._
@@ -65,15 +67,15 @@ trait DBTableDefinitions {
 
   case class DBTimeEntry(id: Long,
                          user_id: Long,
-                         date: String,
+                         date: Date,
                          quantity: Long,
                          description: String,
                          status: String)
 
   class TimeEntriesTable(tag: Tag) extends Table[DBTimeEntry](tag, "time_entries") {
-    def id = column[Long]("id")
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def user_id = column[Long]("user_id")
-    def date = column[String]("date")
+    def date = column[Date]("date")
     def quantity = column[Long]("quantity")
     def description = column[String]("description")
     def status = column[String]("status")
@@ -83,14 +85,14 @@ trait DBTableDefinitions {
   case class DBTimeEntryResponse(id: Long,
                                  manager_id: Long,
                                  entry_id: Long,
-                                 date: String,
+                                 date: Date,
                                  response: String)
 
   class TimeEntryResponsesTable(tag: Tag) extends Table[DBTimeEntryResponse](tag, "time_entry_responses") {
-    def id = column[Long]("id")
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def manager_id = column[Long]("manager_id")
     def entry_id = column[Long]("entry_id")
-    def date = column[String]("date")
+    def date = column[Date]("date")
     def response = column[String]("response")
     def * = (id, manager_id, entry_id, date, response) <> (DBTimeEntryResponse.tupled, DBTimeEntryResponse.unapply)
   }
