@@ -1,5 +1,8 @@
 angular.module('timetracker')
   .controller('EntriesController', function($localStorage, entryFactory, $log, $state, toastr, responseFactory) {
+    if ($localStorage.user == null) {
+      $state.go("home");
+    }
     var vm = this;
     vm.entries = [];
 
@@ -32,8 +35,18 @@ angular.module('timetracker')
       }
     }
 
+    toastr.info("Loading...");
     entryFactory.getEntriesByUser($localStorage.user.id).then(function (result) {
+      toastr.clear();
       vm.entries = result.data.sort(keysrt('date'));
+    }).catch(function (response) {
+      toastr.clear();
+      if (response.data == null) {
+        toastr.warning("Server error!");
+
+        return;
+      }
+      toastr.warning(response.data.message);
     });
 
     vm.showForm = function() {
@@ -56,14 +69,24 @@ angular.module('timetracker')
     };
 
     vm.showDetailed = function(entry) {
+      toastr.info("Loading...");
       responseFactory.getResponsesByEntry(entry.id).then(function(result) {
+        toastr.clear();
         vm.detailedEntry = entry;
         vm.detailedResponses = result.data;
         vm.views.formView = false;
         vm.views.listView = false;
         vm.views.detailedView = true;
         vm.views.viewEditForm = false;
-      })
+      }).catch(function(response) {
+        toastr.clear();
+        if (response.data == null) {
+          toastr.warning("Server error!");
+          $state.go("profile");
+          return;
+        }
+        toastr.info(response.data.message);
+      });
     };
 
     vm.showEditForm = function() {
@@ -81,6 +104,7 @@ angular.module('timetracker')
     };
 
     vm.submit = function () {
+      toastr.info("Loading...");
       var entry = {
         'id': 0,
         'user': $localStorage.user,
@@ -90,9 +114,10 @@ angular.module('timetracker')
         'status': 'Pending'
       };
       entryFactory.createEntry(entry).then(function(result) {
+        toastr.clear();
         vm.entries.push(result.data);
         vm.user = $localStorage.user;
-        toastr.info('You have successfully created entry');
+        toastr.success('You have successfully created entry');
         vm.showList();
         vm.addEntry = {
           date: new Date(),
@@ -100,6 +125,7 @@ angular.module('timetracker')
           description: ""
         };
       }).catch(function(response) {
+        toastr.clear();
         if (response.data == null) {
           toastr.warning("Server error!");
           return;
@@ -109,6 +135,7 @@ angular.module('timetracker')
     };
 
     vm.submitEditForm = function () {
+      toastr.info("Loading...");
       var entry = {
         'id': 0,
         'user': $localStorage.user,
@@ -119,7 +146,8 @@ angular.module('timetracker')
       };
 
       entryFactory.editEntry(vm.detailedEntry.id, entry).then(function() {
-        toastr.info('You have successfully edited entry');
+        toastr.clear();
+        toastr.success('You have successfully edited entry');
         vm.addEntry = {
           date: new Date(),
           quantity: "",
@@ -128,6 +156,11 @@ angular.module('timetracker')
         vm.views.viewEditForm = false;
         $state.go("home");
       }).catch(function(response) {
+        toastr.clear();
+        if (response.data == null) {
+          toastr.warning("Server error!");
+          return;
+        }
         toastr.info(response.data.message);
       });
     };

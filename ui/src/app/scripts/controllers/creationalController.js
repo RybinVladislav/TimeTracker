@@ -1,5 +1,8 @@
 angular.module('timetracker')
   .controller('CreationController', function($log, toastr, $state, $localStorage, userFactory) {
+    if ($localStorage.user == null) {
+      $state.go("home");
+    }
     var vm = this;
     vm.email = "";
     vm.fistName = "";
@@ -9,6 +12,7 @@ angular.module('timetracker')
     vm.position="";
 
     vm.submit = function () {
+      toastr.info("Loading...");
       var user_data = {
         username: "test",
         firstName: vm.fistName,
@@ -20,14 +24,17 @@ angular.module('timetracker')
       };
 
       userFactory.getUserByEmail(vm.email).then(function() {
+        toastr.clear();
         toastr.info("This email is already in use");
+        vm.email = "";
       }).catch(function (response) {
+        toastr.clear();
         if (response.data == null) {
           toastr.warning("Server is down!");
           return;
         }
         userFactory.createInactiveUser(user_data).then(function () {
-          toastr.info("User has been created");
+          toastr.success("User has been created");
           $state.go("profile");
         })
       })

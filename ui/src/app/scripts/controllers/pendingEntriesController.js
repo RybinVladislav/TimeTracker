@@ -1,5 +1,8 @@
 angular.module('timetracker')
   .controller('PendingEntriesController', function($localStorage, entryFactory, $log, toastr, responseFactory) {
+    if ($localStorage.user == null) {
+      $state.go("home");
+    }
     var vm = this;
     vm.entries = [];
     vm.detailedEntry = false;
@@ -13,8 +16,18 @@ angular.module('timetracker')
       }
     }
 
+    toastr.info("Loading...");
     entryFactory.getPendingEntries().then(function (result) {
+      toastr.clear();
       vm.entries = result.data.sort(keysrt('date'));
+    }).catch(function(response) {
+      toastr.clear();
+      if (response.data == null) {
+        toastr.warning("Server error!");
+        $state.go("home");
+        return;
+      }
+      toastr.info(response.data.message);
     });
 
     vm.showDetailed = function (entry) {
@@ -26,6 +39,7 @@ angular.module('timetracker')
     };
 
     vm.accept = function () {
+      toastr.info("Loading...");
       var response = {
         id: 0,
         manager: $localStorage.user,
@@ -34,12 +48,14 @@ angular.module('timetracker')
         response: vm.response
       };
       responseFactory.createResponse(response).then(function() {
+        toastr.clear();
         vm.detailedEntry.status = 'Accepted';
         entryFactory.editEntry(vm.detailedEntry.id, vm.detailedEntry).then(function() {
-          toastr.info("You have successfully submitted a response!");
+          toastr.success("You have successfully submitted a response!");
           vm.detailedEntry = false;
         })
       }).catch(function(response) {
+        toastr.clear();
         if (response.data == null) {
           toastr.warning("Server error!");
           return;
@@ -49,6 +65,7 @@ angular.module('timetracker')
     };
 
     vm.reject = function () {
+      toastr.info("Loading...");
       var response = {
         id: 0,
         manager: $localStorage.user,
@@ -57,12 +74,14 @@ angular.module('timetracker')
         response: vm.response
       };
       responseFactory.createResponse(response).then(function() {
+        toastr.clear();
         vm.detailedEntry.status = 'Rejected';
         entryFactory.editEntry(vm.detailedEntry.id, vm.detailedEntry).then(function() {
-          toastr.info("You have successfully submitted a response!");
+          toastr.success("You have successfully submitted a response!");
           vm.detailedEntry = false;
         })
       }).catch(function(response) {
+        toastr.clear();
         if (response.data == null) {
           toastr.warning("Server error!");
           return;
