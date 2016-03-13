@@ -20,4 +20,10 @@ routesGenerator := InjectedRoutesGenerator
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
 
-resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"  
+resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+
+resolvers += "jcenter" at "http://jcenter.bintray.com"
+
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
+resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"

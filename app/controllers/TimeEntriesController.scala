@@ -23,10 +23,10 @@ class TimeEntriesController @Inject() (val messagesApi: MessagesApi,
   def createEntry() = SecuredAction(UserRights).async(parse.json) { implicit request =>
     request.body.validate[TimeEntry].fold(
       errors => {
-        Future.successful(BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors))))
+        Future.successful(BadRequest(Json.obj("message" -> JsError.toJson(errors))))
       },
       timeEntry => {
-        timeEntriesService.createEntry(timeEntry).map(r => Ok(Json.toJson(r)))
+        timeEntriesService.createEntry(timeEntry).map(entry => Ok(Json.toJson(entry)))
       }
     )
   }
@@ -34,20 +34,16 @@ class TimeEntriesController @Inject() (val messagesApi: MessagesApi,
   def getEntry(id: Long) = SecuredAction.async {
     timeEntriesService.getEntryByID(id).map{
       case Some(entry) => Ok(Json.toJson(entry))
-      case None => Ok(Json.toJson("null"))
+      case None => BadRequest(Json.obj("message" -> "Couldn't find entry."))
     }
   }
 
   def editEntry(id: Long) = SecuredAction.async(parse.json) { implicit request =>
     request.body.validate[TimeEntry].fold(
       errors => {
-        Future.successful(BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors))))
+        Future.successful(BadRequest(Json.obj("message" -> JsError.toJson(errors))))
       },
-      entry => {
-        val user = User(0, None, None,
-          None, None, None,
-          None, None, None, UserRoles.User)
-        val newEntry = TimeEntry(0, user, entry.date, entry.quantity, entry.description, entry.status)
+      newEntry => {
         timeEntriesService.updateEntry(id, newEntry).map(entry => Ok(Json.toJson(entry)))
       }
     )

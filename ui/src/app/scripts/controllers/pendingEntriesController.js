@@ -33,14 +33,18 @@ angular.module('timetracker')
         date: Date.now().toString(),
         response: vm.response
       };
-      responseFactory.createResponse(response).then(function(result) {
+      responseFactory.createResponse(response).then(function() {
         vm.detailedEntry.status = 'Accepted';
-        entryFactory.editEntry(vm.detailedEntry.id, vm.detailedEntry).then(function(result) {
+        entryFactory.editEntry(vm.detailedEntry.id, vm.detailedEntry).then(function() {
           toastr.info("You have successfully submitted a response!");
           vm.detailedEntry = false;
         })
-      }).catch(function(error) {
-        toastr.info(error);
+      }).catch(function(response) {
+        if (response.data == null) {
+          toastr.warning("Server error!");
+          return;
+        }
+        toastr.info(response.data.message);
       });
     };
 
@@ -52,14 +56,18 @@ angular.module('timetracker')
         date: Date.now().toString(),
         response: vm.response
       };
-      responseFactory.createResponse(response).then(function(result) {
+      responseFactory.createResponse(response).then(function() {
         vm.detailedEntry.status = 'Rejected';
-        entryFactory.editEntry(vm.detailedEntry.id, vm.detailedEntry).then(function(result) {
+        entryFactory.editEntry(vm.detailedEntry.id, vm.detailedEntry).then(function() {
           toastr.info("You have successfully submitted a response!");
           vm.detailedEntry = false;
         })
-      }).catch(function(error) {
-        toastr.info(error);
+      }).catch(function(response) {
+        if (response.data == null) {
+          toastr.warning("Server error!");
+          return;
+        }
+        toastr.info(response.data.message);
       });
     };
   });

@@ -21,7 +21,11 @@ angular.module('timetracker')
 
       userFactory.getUserByEmail(vm.email).then(function() {
         toastr.info("This email is already in use");
-      }).catch(function () {
+      }).catch(function (response) {
+        if (response.data == null) {
+          toastr.warning("Server is down!");
+          return;
+        }
         userFactory.createInactiveUser(user_data).then(function () {
           toastr.info("User has been created");
           $state.go("profile");

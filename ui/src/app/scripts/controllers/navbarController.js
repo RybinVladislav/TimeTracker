@@ -3,7 +3,7 @@ angular.module('timetracker')
     var vm = this;
 
     vm.isAuthenticated = function() {
-      return $auth.isAuthenticated();
+      return ($auth.isAuthenticated() && $localStorage.user !== null);
     };
 
     vm.isUser = function () {

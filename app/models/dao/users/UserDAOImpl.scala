@@ -83,21 +83,13 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
     */
   def getUserByEmail(email: String): Future[Option[User]] = {
 
-    val query = slickUsers.filter(_.email === email)
+    val query = for {
+                  dbUser <- slickUsers.filter(_.email === email)
+                } yield dbUser
 
     db.run(query.result.headOption).map { resultOption =>
       resultOption.map {
-        case user =>
-          User(user.id,
-            None,
-            user.username,
-            user.firstName,
-            user.lastName,
-            user.address,
-            user.phone,
-            user.email,
-            user.position,
-            UserRoles.withName(user.userRole))
+        case user => DBUser.dbUser2User(user)
       }
     }
   }
@@ -144,18 +136,13 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
     *
     * @return The sequence of all registered users.
     */
-  def getAllUsers: Future[Seq[User]] = db.run(slickUsers.result).map { dbUserOption =>
-    dbUserOption.map { user =>
-      User(user.id,
-        None,
-        user.username,
-        user.firstName,
-        user.lastName,
-        user.address,
-        user.phone,
-        user.email,
-        user.position,
-        UserRoles.withName(user.userRole))
+  def getAllUsers: Future[Seq[User]] = {
+    val query = for {
+      dbUser <- slickUsers.result
+    } yield dbUser
+    db.run(query).map { dbUserSeq =>
+      dbUserSeq.map { user => DBUser.dbUser2User(user)
+      }
     }
   }
 
@@ -183,7 +170,7 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
   override def createInactiveUser(user: User): Future[Option[User]] = {
     val dbUser = DBUser(0, user.username, user.firstName,
       user.lastName, user.address, user.phone, user.email, user.position, user.userRole.toString)
-    db.run(slickUsers += dbUser)
-    getUserByEmail(user.email.get)
+    db.run((slickUsers returning slickUsers.map(_.id)) += dbUser)
+      .flatMap(id => getUserByID(id))
   }
 }

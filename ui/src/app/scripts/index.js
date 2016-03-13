@@ -6,6 +6,7 @@
                                   'ui.bootstrap', 'toastr', 'satellizer', 'ngStorage'])
     .constant('malarkey', malarkey)
     .constant('moment', moment)
+    .constant('API_URL', 'http://localhost:9000/')
     .config(function ($logProvider, toastrConfig, $stateProvider,
                       $urlRouterProvider, $httpProvider, $authProvider) {
       $urlRouterProvider.otherwise('/');
@@ -138,7 +139,7 @@
       toastrConfig.allowHtml = true;
       toastrConfig.timeOut = 3000;
       toastrConfig.positionClass = 'toast-bottom-right';
-      toastrConfig.preventDuplicates = true;
+      toastrConfig.preventDuplicates = false;
       toastrConfig.progressBar = true;
 
       function managerRequired($q, $location, $auth, $localStorage) {
@@ -171,8 +172,6 @@
         return deferred.promise;
       }
 
-    }).run(function ($log) {
-    $log.debug('runBlock end');
-  });
+    });
 
 })();

@@ -19,6 +19,9 @@ angular.module('timetracker')
             });
         })
         .catch(function(response) {
+          if (response.data == null) {
+            toastr.warning("Server error!");
+          }
           toastr.info(response.data.message);
           $log.log(response);
         });

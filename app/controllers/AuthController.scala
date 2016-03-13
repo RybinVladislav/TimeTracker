@@ -45,7 +45,7 @@ class AuthController @Inject() (val messagesApi: MessagesApi,
     request.body.validate[Credentials].map { case cred =>
       credentialsProvider.authenticate(cred).flatMap { loginInfo =>
         userService.retrieve(loginInfo).flatMap {
-          case Some(user) => env.authenticatorService.create(user.loginInfo.get).flatMap { authenticator =>
+          case Some(user) => env.authenticatorService.create(loginInfo).flatMap { authenticator =>
             env.eventBus.publish(LoginEvent(user, request, request2Messages))
             env.authenticatorService.init(authenticator).flatMap { token =>
               env.authenticatorService.embed(token,
@@ -61,7 +61,7 @@ class AuthController @Inject() (val messagesApi: MessagesApi,
       }
     }.recoverTotal {
       case error =>
-        Future.successful(Unauthorized(Json.obj("message" -> "kek")))
+        Future.successful(BadRequest(Json.obj("message" -> "Could not validate Json")))
     }
   }
 }

@@ -11,7 +11,7 @@ trait ResponseDAO {
     * @param response The response to create.
     * @return The created response.
     */
-  def createResponse(response: TimeEntryResponse): Future[String]
+  def createResponse(response: TimeEntryResponse): Future[Option[TimeEntryResponse]]
 
   /**
     * Finds a response by its id.

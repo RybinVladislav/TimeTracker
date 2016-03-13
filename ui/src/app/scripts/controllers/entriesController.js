@@ -30,7 +30,7 @@ angular.module('timetracker')
         if (a[key] < b[key]) return -1;
         return 0;
       }
-    };
+    }
 
     entryFactory.getEntriesByUser($localStorage.user.id).then(function (result) {
       vm.entries = result.data.sort(keysrt('date'));
@@ -100,6 +100,10 @@ angular.module('timetracker')
           description: ""
         };
       }).catch(function(response) {
+        if (response.data == null) {
+          toastr.warning("Server error!");
+          return;
+        }
         toastr.info(response.data.message);
       });
     };
@@ -114,7 +118,7 @@ angular.module('timetracker')
         'status': 'Pending'
       };
 
-      entryFactory.editEntry(vm.detailedEntry.id, entry).then(function(result) {
+      entryFactory.editEntry(vm.detailedEntry.id, entry).then(function() {
         toastr.info('You have successfully edited entry');
         vm.addEntry = {
           date: new Date(),

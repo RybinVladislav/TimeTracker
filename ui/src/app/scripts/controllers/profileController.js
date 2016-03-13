@@ -24,6 +24,10 @@ angular.module('timetracker')
         toastr.info('You have successfully edited profile');
         vm.switchProfile();
       }).catch(function(response) {
+        if (response.data == null) {
+          toastr.warning("Server error!");
+          return;
+        }
         toastr.info(response.data.message);
       });
     }
