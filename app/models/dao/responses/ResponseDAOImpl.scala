@@ -20,11 +20,9 @@ class ResponseDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     * @param response The response to create.
     * @return The created response.
     */
-  override def createResponse(response: TimeEntryResponse): Future[String] = {
-    val dBResponse = DBTimeEntryResponse(response.id, response.manager.id, response.entry_id, new Date(response.date.toLong), response.response)
-    db.run(slickResponses += dBResponse).map(res => "Response successfully added").recover {
-      case ex: Exception => ex.getCause.getMessage
-    }
+  override def createResponse(response: TimeEntryResponse): Future[Option[TimeEntryResponse]] = {
+    db.run((slickResponses returning slickResponses.map(_.id)) += response)
+    .flatMap(id => getResponseByID(id))
   }
 
   /**
@@ -40,15 +38,11 @@ class ResponseDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigPr
         responseAuthor <- slickUsers.filter(_.id === entryResponse.manager_id)
       } yield (entryResponse, responseAuthor)
     }
-    db.run(query.result).map(resultOption => resultOption.map {
-      case (response, manager) =>
-        TimeEntryResponse(response.id,
-          User(manager.id, None, manager.username, manager.firstName, manager.lastName, None, None, None, None, UserRoles.Manager),
-          response.entry_id,
-          response.date.getTime.toString,
-          response.response)
+    db.run(query.result).map{
+      resultSeq => resultSeq.map {
+        case (response, manager) => DBTimeEntryResponse.dbTimeEntryResponse2TimeEntryResponse(response, manager)
+      }
     }
-    )
   }
 
   /**
@@ -64,14 +58,10 @@ class ResponseDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigPr
         responseAuthor <- slickUsers.filter(_.id === entryResponse.manager_id)
       } yield (entryResponse, responseAuthor)
     }
-    db.run(query.result.headOption).map(resultOption => resultOption.map {
-      case (response, manager) =>
-        TimeEntryResponse(response.id,
-          User(manager.id, None, manager.username, manager.firstName, manager.lastName, None, None, None, None, UserRoles.Manager),
-          response.entry_id,
-          response.date.getTime.toString,
-          response.response)
+    db.run(query.result.headOption).map{
+      resultOption => resultOption.map {
+        case (response, manager) => DBTimeEntryResponse.dbTimeEntryResponse2TimeEntryResponse(response, manager)
+      }
     }
-    )
   }
 }

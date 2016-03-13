@@ -23,14 +23,6 @@ class TimeEntriesServiceImpl @Inject() (timeEntriesDAO: TimeEntryDAO)extends Tim
   override def getAllEntries: Future[Seq[TimeEntry]] = timeEntriesDAO.getAllEntries
 
   /**
-    * Gets the list of all rejected entries by user
-    *
-    * @param userID The id of the user that created the entries.
-    * @return The sequence of all rejected entries for a user with userID.
-    */
-  override def getRejectedEntriesByUser(userID: Long): Future[Seq[TimeEntry]] = timeEntriesDAO.getRejectedEntriesByUser(userID)
-
-  /**
     * Gets the list of all entries by user
     *
     * @param userID The id of the user that created the entries.
@@ -53,7 +45,7 @@ class TimeEntriesServiceImpl @Inject() (timeEntriesDAO: TimeEntryDAO)extends Tim
     * @param entry The entry to create.
     * @return The created entry.
     */
-  override def createEntry(entry: TimeEntry): Future[String] = timeEntriesDAO.createEntry(entry)
+  override def createEntry(entry: TimeEntry): Future[Option[TimeEntry]] = timeEntriesDAO.createEntry(entry)
 
   /**
     * Gets the list of all pending entries

@@ -15,6 +15,13 @@ case class UserData(username: String,
                     position: String)
 
 object UserData {
+
+  implicit def userData2User(userData: UserData): User = {
+    User(0, None, Some(userData.username),
+      Some(userData.firstName), Some(userData.lastName), Some(userData.address),
+      Some(userData.phone), Some(userData.email), Some(userData.position), UserRoles.User)
+  }
+
   implicit val userWrites = new Writes[UserData] {
     def writes(user: UserData) = Json.obj(
       "username" -> user.username,

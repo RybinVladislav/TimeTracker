@@ -37,20 +37,12 @@ trait TimeEntryDAO {
   def getEntriesByUser(userID: Long): Future[Seq[TimeEntry]]
 
   /**
-    * Gets the list of all rejected entries by user
-    *
-    * @param userID The id of the user that created the entries.
-    * @return The sequence of all rejected entries for a user with userID.
-    */
-  def getRejectedEntriesByUser(userID: Long): Future[Seq[TimeEntry]]
-
-  /**
     * Creates an entry.
     *
     * @param entry The entry to create.
     * @return The created entry.
     */
-  def createEntry(entry: TimeEntry): Future[String]
+  def createEntry(entry: TimeEntry): Future[Option[TimeEntry]]
 
   /**
     * Updates an existing entry.

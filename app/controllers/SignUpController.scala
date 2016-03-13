@@ -31,7 +31,7 @@ class SignUpController @Inject() (val messagesApi: MessagesApi,
   def signUp = Action.async(parse.json) { implicit request =>
     request.body.validate[Credentials].fold (
       errors => {
-        Future.successful(BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toJson(errors))))
+        Future.successful(BadRequest(Json.obj("message" -> JsError.toJson(errors))))
       },
       signUp => {
         val loginInfo = LoginInfo(CredentialsProvider.ID, signUp.identifier)
@@ -46,17 +46,17 @@ class SignUpController @Inject() (val messagesApi: MessagesApi,
                   authenticator <- env.authenticatorService.create(loginInfo)
                   token <- env.authenticatorService.init(authenticator)
                   result <- env.authenticatorService.embed(token,
-                    Ok(Json.toJson(Token(token = token, expiresOn = authenticator.expirationDateTime))))
+                  Ok(Json.toJson(Token(token = token, expiresOn = authenticator.expirationDateTime))))
                 } yield {
                   env.eventBus.publish(SignUpEvent(user.get, request, request2Messages))
                   env.eventBus.publish(LoginEvent(user.get, request, request2Messages))
                   result
                 }
               }
-              case Some(user) => Future.successful(Conflict(Json.toJson("user already exists")))
+              case Some(user) => Future.successful(Conflict(Json.obj("message" -> "user already exists")))
             }
           }
-          case None => Future.successful(Conflict(Json.toJson("You are not allowed to sign up")))
+          case None => Future.successful(Conflict(Json.obj("message" -> "You are not allowed to sign up")))
         }
       }
     )

@@ -3,6 +3,7 @@ package models.dao
 import java.sql.Date
 
 import com.mohiva.play.silhouette.api.LoginInfo
+import models._
 import slick.lifted.Tag
 import slick.driver.PostgresDriver.api._
 
@@ -18,6 +19,21 @@ trait DBTableDefinitions {
                   position: Option[String],
                   userRole: String)
 
+  object DBUser {
+    def dbUser2User(user: DBUser): User = {
+      User(user.id,
+        None,
+        user.username,
+        user.firstName,
+        user.lastName,
+        user.address,
+        user.phone,
+        user.email,
+        user.position,
+        UserRoles.withName(user.userRole))
+    }
+  }
+
   class UsersTable(tag: Tag) extends Table[DBUser](tag, "users") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def username = column[Option[String]]("username")
@@ -28,8 +44,8 @@ trait DBTableDefinitions {
     def email = column[Option[String]]("email")
     def position = column[Option[String]]("position")
     def userRole = column[String]("user_role")
-
-    def * = (id, username, firstName, lastName, address, phone, email, position, userRole) <> (DBUser.tupled, DBUser.unapply)
+    def * = (id, username, firstName, lastName,
+      address, phone, email, position, userRole) <> ((DBUser.apply _).tupled, DBUser.unapply)
   }
 
   case class DBLoginInfo(id: Option[Long],
@@ -72,6 +88,26 @@ trait DBTableDefinitions {
                          description: String,
                          status: String)
 
+  object DBTimeEntry {
+    implicit def timeEntry2dbTimeEntry(entry: TimeEntry): DBTimeEntry = {
+        DBTimeEntry(entry.id,
+          entry.user.id,
+          new Date(entry.date.toLong),
+          entry.quantity,
+          entry.description,
+          entry.status.toString)
+    }
+
+    def dbTimeEntry2TimeEntry(entry: DBTimeEntry, user: DBUser): TimeEntry = {
+      TimeEntry(entry.id,
+        DBUser.dbUser2User(user),
+        entry.date.getTime.toString,
+        entry.quantity,
+        entry.description,
+        EntryStatus.withName(entry.status))
+    }
+  }
+
   class TimeEntriesTable(tag: Tag) extends Table[DBTimeEntry](tag, "time_entries") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def user_id = column[Long]("user_id")
@@ -79,7 +115,7 @@ trait DBTableDefinitions {
     def quantity = column[Long]("quantity")
     def description = column[String]("description")
     def status = column[String]("status")
-    def * = (id, user_id, date, quantity, description, status) <> (DBTimeEntry.tupled, DBTimeEntry.unapply)
+    def * = (id, user_id, date, quantity, description, status) <> ((DBTimeEntry.apply _).tupled, DBTimeEntry.unapply)
   }
 
   case class DBTimeEntryResponse(id: Long,
@@ -88,13 +124,31 @@ trait DBTableDefinitions {
                                  date: Date,
                                  response: String)
 
+  object DBTimeEntryResponse {
+    implicit def timeEntryResponse2dbTimeEntryResponse(response: TimeEntryResponse): DBTimeEntryResponse = {
+      DBTimeEntryResponse(response.id,
+        response.manager.id,
+        response.entry_id,
+        new Date(response.date.toLong),
+        response.response)
+    }
+
+    def dbTimeEntryResponse2TimeEntryResponse(response: DBTimeEntryResponse, manager: DBUser): TimeEntryResponse = {
+      TimeEntryResponse(response.id,
+        DBUser.dbUser2User(manager),
+        response.entry_id,
+        response.date.getTime.toString,
+        response.response)
+    }
+  }
+
   class TimeEntryResponsesTable(tag: Tag) extends Table[DBTimeEntryResponse](tag, "time_entry_responses") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def manager_id = column[Long]("manager_id")
     def entry_id = column[Long]("entry_id")
     def date = column[Date]("date")
     def response = column[String]("response")
-    def * = (id, manager_id, entry_id, date, response) <> (DBTimeEntryResponse.tupled, DBTimeEntryResponse.unapply)
+    def * = (id, manager_id, entry_id, date, response) <> ((DBTimeEntryResponse.apply _).tupled, DBTimeEntryResponse.unapply)
   }
 
   // table query definitions

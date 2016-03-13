@@ -33,7 +33,7 @@ class TimeEntryResponsesController @Inject() (val messagesApi: MessagesApi,
   def getResponse(id: Long) = SecuredAction.async {
     responsesService.getResponseByID(id).map{
       case Some(response) => Ok(Json.toJson(response))
-      case None => Ok(Json.toJson("null"))
+      case None => BadRequest(Json.obj("message" -> "Couldn't find an entry"))
     }
   }
 

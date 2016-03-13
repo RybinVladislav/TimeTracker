@@ -1,6 +1,6 @@
 angular.module('timetracker')
-  .factory('userFactory', function ($http){
-    var url = "http://localhost:9000/users";
+  .factory('userFactory', function ($http, API_URL){
+    var url = API_URL + "users";
     var inst = {
       createInactiveUser: function(user) {
         return $http({

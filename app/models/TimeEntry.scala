@@ -9,6 +9,7 @@ case class TimeEntry(id: Long,
                      description: String,
                      status: EntryStatus.Value)
 
+
 object EntryStatus extends Enumeration {
   type EntryStatus = Value
   val Pending, Rejected, Accepted = Value

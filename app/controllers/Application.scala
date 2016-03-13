@@ -5,8 +5,8 @@ import javax.inject.Inject
 import com.mohiva.play.silhouette.api.{Environment, Silhouette}
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import models.User
-import org.joda.time.DateTime
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import services.users.UsersService
 
 import scala.concurrent.Future
@@ -19,6 +19,6 @@ class Application @Inject() (val messagesApi: MessagesApi,
   implicit val entryFormat = formatters.json.TimeEntryFormats.restFormat
 
   def index = UserAwareAction.async { implicit request =>
-    Future.successful(Ok(views.html.index(request.identity.toString)))
+    Future.successful(Ok(Json.toJson(request.identity.toString)))
   }
 }

@@ -13,7 +13,7 @@ class ResponsesServiceImpl @Inject() (responsesDAO: ResponseDAO)extends Response
     * @param response The response to create.
     * @return The created response.
     */
-  override def createResponse(response: TimeEntryResponse): Future[String] = responsesDAO.createResponse(response)
+  override def createResponse(response: TimeEntryResponse): Future[Option[TimeEntryResponse]] = responsesDAO.createResponse(response)
 
   /**
     * Gets the list of entry responses by entry id.

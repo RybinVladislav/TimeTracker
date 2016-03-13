@@ -1,9 +1,9 @@
 angular.module('timetracker')
-  .factory('entryFactory', function ($http){
-    var url = "http://localhost:9000/entries";
+  .factory('entryFactory', function ($http, API_URL){
+    var url = API_URL + "entries";
     var inst = {
       'getEntriesByUser': function(user_id) {
-        return $http.get("http://localhost:9000/users/"+ user_id +"/entries");
+        return $http.get(API_URL + "users/"+ user_id +"/entries");
       },
       'getPendingEntries': function() {
         return $http.get(url +"/pending");
