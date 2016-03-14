@@ -8,10 +8,11 @@ angular.module('timetracker')
      * Submits the login form.
      */
     vm.submit = function() {
+      toastr.info("Loading...");
       $auth.signup({ identifier: vm.email, password: vm.password })
         .then(function() {
+          toastr.clear();
           toastr.info('You have successfully signed up');
-          $log.log("You have successfully signed up");
           userFactory.getUserByEmail(vm.email)
             .then(function(result) {
               $localStorage.user = result.data;
@@ -19,11 +20,11 @@ angular.module('timetracker')
             });
         })
         .catch(function(response) {
+          toastr.clear();
           if (response.data == null) {
             toastr.warning("Server error!");
           }
           toastr.info(response.data.message);
-          $log.log(response);
         });
     };
   });
