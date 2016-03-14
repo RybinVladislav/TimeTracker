@@ -31,6 +31,7 @@ angular.module('timetracker')
     });
 
     vm.showDetailed = function (entry) {
+      $log.log(entry.id);
       vm.detailedEntry = entry;
     };
 
@@ -47,12 +48,19 @@ angular.module('timetracker')
         date: Date.now().toString(),
         response: vm.response
       };
+      $log.log(response);
       responseFactory.createResponse(response).then(function() {
         toastr.clear();
         vm.detailedEntry.status = 'Accepted';
+        vm.entries.forEach(function(entry, index) {
+          if (entry.id === vm.detailedEntry.id) {
+            vm.entries.splice(index,1);
+          }
+        });
         entryFactory.editEntry(vm.detailedEntry.id, vm.detailedEntry).then(function() {
           toastr.success("You have successfully submitted a response!");
           vm.detailedEntry = false;
+          vm.response="";
         })
       }).catch(function(response) {
         toastr.clear();
@@ -76,9 +84,15 @@ angular.module('timetracker')
       responseFactory.createResponse(response).then(function() {
         toastr.clear();
         vm.detailedEntry.status = 'Rejected';
+        vm.entries.forEach(function(entry, index) {
+          if (entry.id === vm.detailedEntry.id) {
+            vm.entries.splice(index,1);
+          }
+        });
         entryFactory.editEntry(vm.detailedEntry.id, vm.detailedEntry).then(function() {
           toastr.success("You have successfully submitted a response!");
           vm.detailedEntry = false;
+          vm.response="";
         })
       }).catch(function(response) {
         toastr.clear();

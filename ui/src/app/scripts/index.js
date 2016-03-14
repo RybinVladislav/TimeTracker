@@ -142,7 +142,7 @@
       toastrConfig.preventDuplicates = false;
       toastrConfig.progressBar = true;
 
-      function managerRequired($q, $location, $auth, $localStorage) {
+      function managerRequired($q, $location, $localStorage) {
         var deferred = $q.defer();
         if ($localStorage.user.userRole == 'Manager') {
           deferred.resolve();
