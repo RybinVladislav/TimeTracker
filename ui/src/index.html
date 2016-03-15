@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="timetracker">
+<html ng-app="timetracker" ng-sctrict-di>
   <head>
     <meta charset="utf-8">
     <title>TimeTracker</title>
@@ -20,9 +20,6 @@
     <!-- endbuild -->
   </head>
   <body>
-    <!--[if lt IE 10]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]-->
 
     <div ng-include src="'app/templates/navbar.html'"></div>
     <div ui-view class="container"></div>
