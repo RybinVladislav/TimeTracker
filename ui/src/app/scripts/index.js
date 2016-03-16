@@ -2,7 +2,7 @@
 (function() {
   'use strict';
 
-  angular.module('timetracker', ['ngResource', 'ngCookies', 'ui.router',
+  angular.module('timetracker', ['ngResource', 'ngCookies', 'ui.router', 'ui.router.stateHelper',
                                   'ui.bootstrap', 'toastr', 'satellizer', 'ngStorage'])
     .constant('malarkey', malarkey)
     .constant('moment', moment)
