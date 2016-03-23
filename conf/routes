@@ -22,7 +22,7 @@ GET     /entries/:id                controllers.TimeEntriesController.getEntry(i
 PUT     /entries/:id                controllers.TimeEntriesController.editEntry(id: Long)
 GET     /entries/:id/responses      controllers.TimeEntryResponsesController.getResponsesByEntry(id: Long)
 
-POST    /responses                controllers.TimeEntryResponsesController.createResponse()
+POST    /responses                  controllers.TimeEntryResponsesController.createResponse()
 GET     /responses/:id              controllers.TimeEntryResponsesController.getResponse(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path

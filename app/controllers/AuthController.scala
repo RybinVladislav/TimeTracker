@@ -11,7 +11,7 @@ import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import models.User
 import services.users.UsersService
-import play.api.Configuration
+import play.api.{Configuration, Logger}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.Action
@@ -40,8 +40,10 @@ class AuthController @Inject() (val messagesApi: MessagesApi,
                                 clock: Clock) extends Silhouette[User, JWTAuthenticator] {
 
   implicit val restCredentialFormat = formatters.json.CredentialFormats.restFormat
+  val accessLogger: Logger = Logger("access")
 
-  def authenticate = Action.async(parse.json) { implicit request =>
+  def authenticate = Action.async(parse.json) { implicit request => {
+    accessLogger.info("Login requested")
     request.body.validate[Credentials].map { case cred =>
       credentialsProvider.authenticate(cred).flatMap { loginInfo =>
         userService.retrieve(loginInfo).flatMap {
@@ -64,4 +66,4 @@ class AuthController @Inject() (val messagesApi: MessagesApi,
         Future.successful(BadRequest(Json.obj("message" -> "Could not validate Json")))
     }
   }
-}
+}}

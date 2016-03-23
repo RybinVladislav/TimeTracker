@@ -22,8 +22,7 @@
         <hr>
         <br>
         <button class="btn btn-primary btn-lg btn-block"
-                ng-disabled ="loginForm.$error.required || loginForm.$error.email"
-                ng-click="login_ctrl.submit()">LOGIN</button>
+                ng-click="login_ctrl.submit(loginForm)">LOGIN</button>
       </div>
     </div>
   </form>

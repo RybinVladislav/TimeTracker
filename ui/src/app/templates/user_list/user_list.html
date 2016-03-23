@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="userlist" ng-if="!users_ctrl.detailedView">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="jumbotron"><h4>Here you can see every user in our system.</h4><h4> Click an item to see detailed info.</h4>
+        </div>
+
+        <div class="list-group">
+          <a ng-repeat="user in users_ctrl.users" ui-sref="single_user({email:user.email})">
+          <button type="button" class="list-group-item">
+            {{user.firstName + ' '+ user.lastName}}</button>
+            </a>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div ui-view/>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+

@@ -1,0 +1,34 @@
+<div class="user_profile" >
+  <div class="well well-sm">
+    <div class="row">
+      <div class="col-sm-6 col-md-4">
+        <img src="http://placehold.it/380x500" alt="" class="img-rounded img-responsive" />
+      </div>
+      <div class="col-sm-6 col-md-8">
+        <h4>
+          {{user_ctrl.user.firstName + ' ' + user_ctrl.user.lastName}}</h4>
+        <small><cite>{{user_ctrl.user.address}}<i class="glyphicon glyphicon-map-marker glyph-card">
+        </i></cite></small>
+        <h5>
+          <i class="glyphicon glyphicon-envelope glyph-card"></i>{{user_ctrl.user.email}}
+          <br />
+          <i class="glyphicon glyphicon-user glyph-card"></i>{{user_ctrl.user.position}}
+          <br />
+          <i class="glyphicon glyphicon-earphone glyph-card" ></i>{{user_ctrl.user.phone}}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="users_entries" ng-if="user_ctrl.isManager()">
+  <h3>User's timelog:</h3>
+  <h4 ng-if="user_ctrl.noEntries()">This user has no entries yet...</h4>
+  <div class="entries_list">
+    <div class="list-group">
+        <button type="button" class="list-group-item" ng-repeat="entry in user_ctrl.entries">
+            {{entry.quantity}} hours on {{entry.date | date:'yyyy-MM-dd'}}
+            Task:"{{entry.description}}"
+            <span class="badge">{{entry.status}}</span>
+          </button>
+    </div>
+  </div>
+</div>
