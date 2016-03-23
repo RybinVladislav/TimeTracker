@@ -1,18 +1,22 @@
 angular.module('timetracker')
   .factory('entryResource', function ($resource, API_URL){
-    var mainURL = API_URL + "entries";
+    var mainURL = API_URL + "entries/:entryId";
+    var params = {entryId: "@entryId"}
 
-    return $resource(mainURL, {
+    return $resource(mainURL, params, {
       'getEntriesByUser': {
         method: 'GET',
         params: {id: '@id'},
-        url: mainURL+ 'users/:id/entries',
+        url: API_URL + 'users/:id/entries',
         isArray: true
       },
       'getPendingEntries': {
         method: 'GET',
-        url: mainURL+ 'entries/pending',
+        url: API_URL + 'entries/pending',
         isArray: true
+      },
+      'edit': {
+        method: 'PUT'
       }
     });
   });

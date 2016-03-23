@@ -1,0 +1,65 @@
+<div class="detailed_entry">
+  <div class="jumbotron">
+    <div class="entry_view" ng-if="!entry_ctrl.edit">
+        <h3>Task name: "{{entry_ctrl.entry.description}}"</h3>
+        <span class="label label-info">{{entry_ctrl.entry.status}}</span>
+        <h4>You spent {{entry_ctrl.entry.quantity}} hours on
+          {{entry_ctrl.entry.date | date:'yyyy-MM-dd'}} on this task.</h4>
+
+        <h4>Responses:</h4>
+        <h5 ng-if="entry_ctrl.noResponses()">Currently there no responses...</h5>
+        <div class="list-group">
+          <button type="button" class="list-group-item"
+                  ng-repeat="response in entry_ctrl.responses">
+            "{{response.response}}" at {{response.date | date:'yyyy-MM-dd'}}
+            by {{response.manager.firstName + ' ' + response.manager.lastName}}
+            <span class="badge">{{response.status}}</span>
+          </button>
+        </div>
+
+       <div class="inline"> <a ui-sref="entries">
+         <button class="btn btn-primary ">Close</button>
+       </a>
+        <button class="btn btn-primary" ng-if="entry_ctrl.isRejected()"
+                ng-click="entry_ctrl.showEditForm()">Edit task</button>
+         </div>
+    </div>
+    <div class="form_view" ng-if="entry_ctrl.edit">
+      <form method="post" name="entryForm">
+
+        <p class="input-group">
+          <input type="text" class="form-control" placeholder="Date" uib-datepicker-popup
+                 ng-model="entry_ctrl.entry.date"
+                 ng-required="true"
+                 ng-pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}$" close-text="Close" required/>
+
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default">
+              <i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </p>
+
+        <div class="form-group">
+          <div class="right-inner-addon">
+            <input class="form-control " name="quantity" placeholder="Hours spent"
+                   type="text" ng-model="entry_ctrl.entry.quantity" required>
+            <span class="label label-danger" ng-show="entryForm.quantity.$error.required">Required!</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="right-inner-addon">
+            <input class="form-control " name="description" placeholder="Describe your task"
+                   type="text" ng-model="entry_ctrl.entry.description" required>
+            <span class="label label-danger" ng-show="entryForm.description.$error.required">Required!</span>
+          </div>
+        </div>
+
+        <hr>
+        <br>
+        <button class="btn btn-primary  btn-block"
+                ng-click="entry_ctrl.submitEditForm(entryForm)">SUBMIT</button>
+      </form>
+    </div>
+  </div>
+</div>

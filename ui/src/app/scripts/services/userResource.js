@@ -1,7 +1,7 @@
 angular.module('timetracker')
-  .factory('UserResource', function ($resource, API_URL){
-    var mainURL = API_URL + "users/:id";
-    var params = {userId: '@id'};
+  .factory('userResource', function ($resource, API_URL){
+    var mainURL = API_URL + "users/:userId";
+    var params = {userId: '@userId'};
     return $resource(mainURL, params, {
       'edit': {
         method: 'PUT'

@@ -1,7 +1,7 @@
 angular.module('timetracker')
-  .controller('ProfileController', function($localStorage, userFactory, toastr, $state) {
+  .controller('ProfileController', function($localStorage, userResource, toastr, $state, errorHandler) {
     if ($localStorage.user == null) {
-      $state.go("home");
+      $state.go("index");
     }
     var vm = this;
     vm.user = $localStorage.user;
@@ -22,19 +22,12 @@ angular.module('timetracker')
       vm.newUser.position = vm.position;
       toastr.info("Loading...");
 
-      userFactory.editUser(vm.newUser, vm.user.id).then(function (result) {
-        $localStorage.user = result.data;
+      userResource.edit({userId: vm.newUser.id}, vm.newUser, function(user) {
+        $localStorage.user = user;
         vm.user = $localStorage.user;
         toastr.clear();
         toastr.success('You have successfully edited profile');
         vm.switchProfile();
-      }).catch(function(response) {
-        toastr.clear();
-        if (response.data == null) {
-          toastr.warning("Server error!");
-          return;
-        }
-        toastr.warning(response.data.message);
-      });
+      }, errorHandler.handle);
     }
   });

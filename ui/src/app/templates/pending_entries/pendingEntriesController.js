@@ -1,8 +1,6 @@
 angular.module('timetracker')
-  .controller('PendingEntriesController', function($localStorage, entryFactory, $log, toastr, responseFactory) {
-    if ($localStorage.user == null) {
-      $state.go("home");
-    }
+  .controller('PendingEntriesController', function($localStorage, entryResource, $log, toastr,
+                                                   responseResource, errorHandler) {
     var vm = this;
     vm.entries = [];
     vm.detailedEntry = false;
@@ -17,21 +15,12 @@ angular.module('timetracker')
     }
 
     toastr.info("Loading...");
-    entryFactory.getPendingEntries().then(function (result) {
+    entryResource.getPendingEntries(function (entries) {
       toastr.clear();
-      vm.entries = result.data.sort(keysrt('date'));
-    }).catch(function(response) {
-      toastr.clear();
-      if (response.data == null) {
-        toastr.warning("Server error!");
-        $state.go("home");
-        return;
-      }
-      toastr.info(response.data.message);
-    });
+      vm.entries = entries.sort(keysrt('date'));
+    }, errorHandler.handle);
 
     vm.showDetailed = function (entry) {
-      $log.log(entry.id);
       vm.detailedEntry = entry;
     };
 
@@ -48,8 +37,7 @@ angular.module('timetracker')
         date: Date.now().toString(),
         response: vm.response
       };
-      $log.log(response);
-      responseFactory.createResponse(response).then(function() {
+      responseResource.save(response, function() {
         toastr.clear();
         vm.detailedEntry.status = 'Accepted';
         vm.entries.forEach(function(entry, index) {
@@ -57,19 +45,12 @@ angular.module('timetracker')
             vm.entries.splice(index,1);
           }
         });
-        entryFactory.editEntry(vm.detailedEntry.id, vm.detailedEntry).then(function() {
+        entryResource.edit({entryId: vm.detailedEntry.id} , vm.detailedEntry, function() {
           toastr.success("You have successfully submitted a response!");
           vm.detailedEntry = false;
           vm.response="";
-        })
-      }).catch(function(response) {
-        toastr.clear();
-        if (response.data == null) {
-          toastr.warning("Server error!");
-          return;
-        }
-        toastr.info(response.data.message);
-      });
+        });
+      }, errorHandler.handle);
     };
 
     vm.reject = function () {
@@ -81,7 +62,7 @@ angular.module('timetracker')
         date: Date.now().toString(),
         response: vm.response
       };
-      responseFactory.createResponse(response).then(function() {
+      responseResource.save(response, function() {
         toastr.clear();
         vm.detailedEntry.status = 'Rejected';
         vm.entries.forEach(function(entry, index) {
@@ -89,18 +70,11 @@ angular.module('timetracker')
             vm.entries.splice(index,1);
           }
         });
-        entryFactory.editEntry(vm.detailedEntry.id, vm.detailedEntry).then(function() {
+        entryResource.edit({entryId: vm.detailedEntry.id} , vm.detailedEntry, function() {
           toastr.success("You have successfully submitted a response!");
           vm.detailedEntry = false;
           vm.response="";
-        })
-      }).catch(function(response) {
-        toastr.clear();
-        if (response.data == null) {
-          toastr.warning("Server error!");
-          return;
-        }
-        toastr.info(response.data.message);
-      });
+        });
+      }, errorHandler.handle);
     };
   });

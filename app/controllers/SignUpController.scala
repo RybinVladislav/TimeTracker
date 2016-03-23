@@ -13,6 +13,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.i18n.MessagesApi
 import play.api.mvc.Action
 import _root_.services.users.UsersService
+import play.api.Logger
 import security.Token
 
 import scala.concurrent.Future
@@ -27,8 +28,10 @@ class SignUpController @Inject() (val messagesApi: MessagesApi,
                                   passwordHasher: PasswordHasher) extends Silhouette[User, JWTAuthenticator] {
 
   implicit val restCredentialFormat = formatters.json.CredentialFormats.restFormat
+  val accessLogger: Logger = Logger("access")
 
-  def signUp = Action.async(parse.json) { implicit request =>
+  def signUp = Action.async(parse.json) { implicit request => {
+    accessLogger.info("User registration requested")
     request.body.validate[Credentials].fold (
       errors => {
         Future.successful(BadRequest(Json.obj("message" -> JsError.toJson(errors))))
@@ -36,9 +39,9 @@ class SignUpController @Inject() (val messagesApi: MessagesApi,
       signUp => {
         val loginInfo = LoginInfo(CredentialsProvider.ID, signUp.identifier)
         userService.getUserByEmail(signUp.identifier).flatMap {
-          case Some(u) => {
+          case Some(u) =>
             userService.retrieve(loginInfo).flatMap {
-              case None => {
+              case None =>
                 val authInfo = passwordHasher.hash(signUp.password)
                 for {
                   user <- userService.activateUser(u.id, loginInfo)
@@ -52,15 +55,13 @@ class SignUpController @Inject() (val messagesApi: MessagesApi,
                   env.eventBus.publish(LoginEvent(user.get, request, request2Messages))
                   result
                 }
-              }
               case Some(user) => Future.successful(Conflict(Json.obj("message" -> "user already exists")))
             }
-          }
           case None => Future.successful(Conflict(Json.obj("message" -> "You are not allowed to sign up")))
         }
       }
     )
-  }
+  }}
 
   def signOut = SecuredAction.async { implicit request =>
     env.eventBus.publish(LogoutEvent(request.identity, request, request2Messages))

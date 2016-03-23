@@ -5,6 +5,7 @@ import javax.inject.Inject
 import com.mohiva.play.silhouette.api.{Environment, Silhouette}
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import models._
+import play.api.Logger
 import play.api.i18n.MessagesApi
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
@@ -20,26 +21,31 @@ class UsersController @Inject() (val messagesApi: MessagesApi,
 
   implicit val userFormat = formatters.json.UserFormats.restFormat
   implicit val entryFormat = formatters.json.TimeEntryFormats.restFormat
+  val accessLogger: Logger = Logger("access")
 
   def getUser(id: Long) = SecuredAction.async {
+    accessLogger.info(s"User $id requested")
     userService.getUserByID(id).map{
       case Some(user) => Ok(Json.toJson(user))
-      case None => NotFound(Json.obj("message" -> "null"))
+      case None => NotFound(Json.obj("message" -> "Not Found"))
     }
   }
 
   def getUserByEmail(email: String) = SecuredAction.async {
+    accessLogger.info(s"User $email requested")
     userService.getUserByEmail(email).map{
       case Some(user) => Ok(Json.toJson(user))
-      case None => NotFound(Json.obj("message" -> "null"))
+      case None => NotFound(Json.obj("message" -> "Not Found"))
     }
   }
 
   def getAllUsers = SecuredAction.async {
+    accessLogger.info("All users requested")
     userService.getAllUsers.map(users => Ok(Json.toJson(users)))
   }
 
-  def createUserByManager = SecuredAction(ManagerRights).async(parse.json) { implicit request =>
+  def createUserByManager = SecuredAction(ManagerRights).async(parse.json) { implicit request => {
+    accessLogger.info("Manager created a user")
     request.body.validate[UserData].fold(
       errors => {
         Future.successful(BadRequest(Json.obj("message" -> JsError.toJson(errors))))
@@ -48,9 +54,10 @@ class UsersController @Inject() (val messagesApi: MessagesApi,
         userService.createInactiveUser(userData).map(user => Ok(Json.toJson(user)))
       }
     )
-  }
+  }}
 
-  def editUser(id: Long) = SecuredAction.async(parse.json) { implicit request =>
+  def editUser(id: Long) = SecuredAction.async(parse.json) { implicit request => {
+    accessLogger.info(s"Edit user $id requested")
     request.body.validate[UserData].fold(
       errors => {
         Future.successful(BadRequest(Json.obj("message" -> JsError.toJson(errors))))
@@ -59,5 +66,5 @@ class UsersController @Inject() (val messagesApi: MessagesApi,
         userService.editUser(id, userData).map(user => Ok(Json.toJson(user)))
       }
     )
-  }
+  }}
 }

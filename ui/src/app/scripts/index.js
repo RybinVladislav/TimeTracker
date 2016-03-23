@@ -7,33 +7,118 @@
     .constant('malarkey', malarkey)
     .constant('moment', moment)
     .constant('API_URL', 'http://localhost:9000/')
-    .config(function ($logProvider, toastrConfig, $stateProvider,
+    .config(function ($logProvider, toastrConfig, stateHelperProvider,
                       $urlRouterProvider, $httpProvider, $authProvider) {
       $urlRouterProvider.otherwise('/');
 
-      $stateProvider
-        .state('home', {
-          url: '/',
-          templateUrl: 'app/templates/main.html',
-          controller: 'MainController',
-          controllerAs: 'main_ctrl',
+      stateHelperProvider.state({
+        name: 'root',
+        abstract: true,
+        views: {
+          'header': {
+            templateUrl: '/app/templates/navbar/navbar.html',
+            controller: 'NavbarController',
+            controllerAs: 'navbar_ctrl'
+          },
+          '': {template: '<div ui-view></div>'}
+        },
+        children: [{
+          name:'index',
+          url: '',
+          templateUrl: '/app/templates/main.html',
           resolve: {
-            skipIfLoggedIn: skipIfLoggedIn
+            loginRequired: skipIfLoggedIn
+          },
+          children: [{
+            name: 'login',
+            url: '/login',
+            templateUrl: '/app/templates/login/login.html',
+            controller: 'LoginController',
+            controllerAs: 'login_ctrl'
+          },
+          {
+            name: 'sign_up',
+            url: '/sign_up',
+            templateUrl: '/app/templates/signup/signup.html',
+            controller: 'SignUpController',
+            controllerAs: 'signup_ctrl'
+          }]
+        },
+        {
+          name:'user',
+          abstract: true,
+          template: '<div ui-view/>',
+          children: [{
+            name:'profile',
+            url: '/profile',
+            templateUrl: '/app/templates/profile/profile.html',
+            controller: 'ProfileController',
+            controllerAs: 'profile_ctrl'
+          }, {
+            name: 'users',
+            url: '/users',
+            templateUrl: '/app/templates/user_list/user_list.html',
+            controller: 'UsersController',
+            controllerAs: 'users_ctrl',
+            params: {
+              email: null
+            },
+            children: [{
+              name: 'single_user',
+              templateUrl: '/app/templates/single_user/user.html',
+              controller: 'SingleUserController',
+              controllerAs: 'user_ctrl'
+            }]
+          }, {
+            name: 'entries',
+            url: '/entries',
+            templateUrl: '/app/templates/entry_list/entries.html',
+            controller: 'EntriesController',
+            controllerAs: 'entries_ctrl',
+            params: {
+              id: null
+            },
+            children: [{
+              name: 'single_entry',
+              templateUrl: '/app/templates/single_entry/entry.html',
+              controller: 'SingleEntryController',
+              controllerAs: 'entry_ctrl'
+            },
+            {
+              name: 'create_entry',
+              templateUrl: '/app/templates/create_entry/create.html',
+              controller: 'createEntryController',
+              controllerAs: 'create_entry_ctrl'
+            }]
+          }],
+          resolve: {
+            loginRequired: loginRequired
           }
-
-        }).state('signup_screen', {
-          url: '/signup',
-          templateUrl: '/app/templates/signup.html',
-          controller: 'signUpController',
-          controllerAs: 'signup_ctrl'
-
-        }).state('login_screen', {
-          url: '/login',
-          templateUrl: '/app/templates/login.html',
-          controller: 'LoginController',
-          controllerAs: 'login_ctrl'
-
-        }).state('logout', {
+        },
+        {
+          name: 'admin',
+          abstract: true,
+          template: '<div ui-view/>',
+          children: [{
+            name: 'pending-entries',
+            url: '/pending_entries',
+            templateUrl: '/app/templates/pending_entries/pending_entries.html',
+            controller: 'PendingEntriesController',
+            controllerAs: 'pending_entries_ctrl'
+          },
+          {
+            name: 'create_user',
+            url: '/user_reg',
+            templateUrl: '/app/templates/create_user/user_reg.html',
+            controller: 'CreationController',
+            controllerAs: 'user_reg_ctrl'
+          }],
+          resolve: {
+            loginRequired: managerRequired
+          }
+        },
+        {
+          name: 'logout',
           url: '/logout',
           template: null,
           controller: 'LogoutController',
@@ -41,53 +126,8 @@
           resolve: {
             loginRequired: loginRequired
           }
-
-        }).state('profile', {
-          url: '/profile',
-          templateUrl: '/app/templates/profile.html',
-          controller: 'ProfileController',
-          controllerAs: 'profile_ctrl',
-          resolve: {
-            loginRequired: loginRequired
-          }
-
-        }).state('users_screen', {
-          url: '/users',
-          templateUrl: '/app/templates/userlist.html',
-          controller: 'UsersController',
-          controllerAs: 'users_ctrl',
-          resolve: {
-            loginRequired: loginRequired
-          }
-
-        }).state('entries_screen', {
-          url: '/entries',
-          templateUrl: '/app/templates/entries.html',
-          controller: 'EntriesController',
-          controllerAs: 'entries_ctrl',
-          resolve: {
-            loginRequired: loginRequired
-          }
-
-        }).state('pending_entries', {
-        url: '/pending_entries',
-        templateUrl: '/app/templates/pending_entries.html',
-        controller: 'PendingEntriesController',
-        controllerAs: 'pending_entries_ctrl',
-        resolve: {
-          loginRequired: managerRequired
-        }
-
-      }).state('create_user', {
-        url: '/user_reg',
-        templateUrl: '/app/templates/user_reg.html',
-        controller: 'CreationController',
-        controllerAs: 'user_reg_ctrl',
-        resolve: {
-          loginRequired: managerRequired
-        }
-
-      });
+        }]
+      }, { keepOriginalNames: true });
 
       $httpProvider.interceptors.push(function($q, $injector) {
         return {
@@ -114,7 +154,7 @@
             if (rejection.status === 401) {
               var $auth = $injector.get('$auth');
               $auth.logout();
-              $injector.get('$state').go('home');
+              $injector.get('$state').go('login');
             }
             return $q.reject(rejection);
           }
@@ -142,34 +182,44 @@
       toastrConfig.preventDuplicates = false;
       toastrConfig.progressBar = true;
 
-      function managerRequired($q, $location, $localStorage) {
-        var deferred = $q.defer();
+      function managerRequired($q, $state, $timeout, $localStorage) {
         if ($localStorage.user.userRole == 'Manager') {
-          deferred.resolve();
+          return $q.when();
         } else {
-          $location.path('/home');
+          $timeout(function() {
+            $state.go('profile');
+          });
         }
-        return deferred.promise;
+        return $q.reject();
       }
 
-      function loginRequired($q, $location, $auth) {
-        var deferred = $q.defer();
+      function loginRequired($q, $state, $timeout, $auth) {
+        //You basically reject the promise in resolve if the user is not authenticated
+        // and then redirect them to the log-in page.
         if ($auth.isAuthenticated()) {
-          deferred.resolve();
+          // Resolve the promise successfully
+          return $q.when();
         } else {
-          $location.path('/login');
+          // The next bit of code is asynchronously tricky.
+          $timeout(function() {
+            // This code runs after the authentication promise has been rejected.
+            // Go to the log-in page
+            $state.go('login');
+          });
+          // Reject the authentication promise to prevent the state from loading
+          return $q.reject();
         }
-        return deferred.promise;
       }
 
-      function skipIfLoggedIn($q,  $location, $auth) {
-        var deferred = $q.defer();
+      function skipIfLoggedIn($q,  $state, $timeout, $auth) {
         if ($auth.isAuthenticated()) {
-          $location.path('/profile');
+          $timeout(function() {
+            $state.go('profile');
+          });
         } else {
-          deferred.resolve();
+          return $q.when();
         }
-        return deferred.promise;
+        return $q.reject();
       }
 
     });

@@ -60,8 +60,7 @@
         <hr>
         <br>
         <button class="btn btn-primary  btn-block"
-                ng-disabled ="createForm.$error.required || createForm.$error.email || createForm.$invalid"
-                ng-click="user_reg_ctrl.submit()">SUBMIT</button>
+                ng-click="user_reg_ctrl.submit(createForm)">SUBMIT</button>
       </form>
     </div>
   </div>
