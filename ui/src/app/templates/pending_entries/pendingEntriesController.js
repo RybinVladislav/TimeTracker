@@ -1,5 +1,5 @@
 angular.module('timetracker')
-  .controller('PendingEntriesController', function($localStorage, entryResource, $log, toastr,
+  .controller('PendingEntriesController', function($localStorage, entryResource, toastr,
                                                    responseResource, errorHandler) {
     var vm = this;
     vm.entries = [];
@@ -26,6 +26,10 @@ angular.module('timetracker')
 
     vm.isDetailed = function () {
       return !(vm.detailedEntry == false);
+    };
+
+    vm.noEntries = function () {
+      return vm.entries.length == 0;
     };
 
     vm.accept = function () {

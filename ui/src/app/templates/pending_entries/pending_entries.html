@@ -4,6 +4,7 @@
     <div class="row">
       <div class="col-md-5 col-md-offset-2">
         <h3>Pending Entries</h3>
+        <h4 ng-if="pending_entries_ctrl.noEntries()">There are no entries yet...</h4>
         <div class="list-group">
           <button type="button" class="list-group-item" ng-repeat="entry in pending_entries_ctrl.entries"
                   ng-click="pending_entries_ctrl.showDetailed(entry)">

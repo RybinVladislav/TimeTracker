@@ -1,5 +1,5 @@
 angular.module('timetracker')
-  .controller('SignUpController', function($scope, $auth, $log, toastr, $state,
+  .controller('SignUpController', function($scope, $auth, toastr, $state,
                                            $localStorage, userResource, errorHandler) {
     var vm = this;
     vm.email = "";
@@ -21,8 +21,10 @@ angular.module('timetracker')
               $localStorage.user = user;
               $state.go("profile");
             }, function (response) {
-              $log.log(response);
-            });
+                errorHandler.handle(response);
+                vm.email = "";
+                vm.password = "";
+              });
           })
           .catch(function (response) {
             errorHandler.handle(response);
