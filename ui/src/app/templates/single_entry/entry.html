@@ -28,10 +28,9 @@
       <form method="post" name="entryForm">
 
         <p class="input-group">
-          <input type="text" class="form-control" placeholder="Date" uib-datepicker-popup
+          <input type="text" class="form-control" placeholder="Date in format YYYY-MM-DD" uib-datepicker-popup
                  ng-model="entry_ctrl.entry.date"
-                 ng-required="true"
-                 ng-pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}$" close-text="Close" required/>
+                 ng-required="true" close-text="Close" required/>
 
           <span class="input-group-btn">
             <button type="button" class="btn btn-default">

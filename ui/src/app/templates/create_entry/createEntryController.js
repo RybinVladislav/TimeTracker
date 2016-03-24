@@ -8,7 +8,8 @@ angular.module('timetracker')
     };
 
     vm.submit = function (form) {
-      if (form.$error.required ||  form.$invalid) {
+      if (form.$error.required ||  form.$invalid
+        || /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(vm.entry.date)) {
         toastr.warning("Fill in the required fields");
       } else {
         toastr.info("Loading...");
