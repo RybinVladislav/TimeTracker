@@ -1,18 +1,19 @@
 angular.module('timetracker')
   .controller('SingleUserController', function($localStorage, entryResource, $auth, userResource,
-                                                $state, toastr, responseResource, errorHandler, $stateParams) {
+                                                $state, toastr, detailed_user, user_entries) {
     var vm = this;
-    vm.user = {};
-    vm.entries = [];
+    vm.user = detailed_user;
+    vm.entries = user_entries;
 
     toastr.info("Loading...");
-    userResource.getByEmail({email: $stateParams.email}, function (user) {
-      toastr.clear();
-      vm.user = user;
-      entryResource.getEntriesByUser({id: user.id}, function (entries) {
-        vm.entries = entries;
-      })
-    }, errorHandler.handle);
+
+    function keysrt(key) {
+      return function(a,b){
+        if (a[key] > b[key]) return -1;
+        if (a[key] < b[key]) return 1;
+        return 0;
+      }
+    }
 
     vm.noEntries = function () {
       return vm.entries.length == 0;

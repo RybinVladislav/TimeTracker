@@ -3,11 +3,11 @@
 
   <p class="input-group">
     <input type="text" class="form-control" placeholder="Date in format YYYY-MM-DD" uib-datepicker-popup
-           ng-model="create_entry_ctrl.entry.date"
-           ng-required="true" close-text="Close"/>
+           ng-model="create_entry_ctrl.entry.date" is-open="create_entry_ctrl.opened"
+           ng-required="true" close-text="Close" />
 
           <span class="input-group-btn">
-            <button type="button" class="btn btn-default">
+            <button type="button" class="btn btn-default" ng-click="create_entry_ctrl.open()">
               <i class="glyphicon glyphicon-calendar"></i>
             </button>
           </span>
@@ -16,8 +16,9 @@
   <div class="form-group">
     <div class="right-inner-addon">
       <input class="form-control " name="quantity" placeholder="Hours spent"
-             type="text" ng-model="create_entry_ctrl.entry.quantity" required>
-      <span class="label label-danger" ng-show="entryForm.quantity.$error.required">Required!</span>
+             type="number" ng-model="create_entry_ctrl.entry.quantity" required>
+      <span class="label label-danger"
+            ng-show="entryForm.quantity.$error.required && create_entry_ctrl.errors">Required!</span>
     </div>
   </div>
 
@@ -25,7 +26,8 @@
     <div class="right-inner-addon">
       <input class="form-control " name="description" placeholder="Describe your task"
              type="text" ng-model="create_entry_ctrl.entry.description" required>
-      <span class="label label-danger" ng-show="entryForm.description.$error.required">Required!</span>
+      <span class="label label-danger"
+            ng-show="entryForm.description.$error.required && create_entry_ctrl.errors">Required!</span>
     </div>
   </div>
 

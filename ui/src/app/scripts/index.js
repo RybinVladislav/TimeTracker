@@ -16,7 +16,7 @@
         abstract: true,
         views: {
           'header': {
-            templateUrl: '/app/templates/navbar/navbar.html',
+            templateUrl: 'app/templates/navbar/navbar.html',
             controller: 'NavbarController',
             controllerAs: 'navbar_ctrl'
           },
@@ -25,21 +25,21 @@
         children: [{
           name:'index',
           url: '',
-          templateUrl: '/app/templates/main.html',
+          templateUrl: 'app/templates/main.html',
           resolve: {
             loginRequired: skipIfLoggedIn
           },
           children: [{
             name: 'login',
             url: '/login',
-            templateUrl: '/app/templates/login/login.html',
+            templateUrl: 'app/templates/login/login.html',
             controller: 'LoginController',
             controllerAs: 'login_ctrl'
           },
           {
             name: 'sign_up',
             url: '/sign_up',
-            templateUrl: '/app/templates/signup/signup.html',
+            templateUrl: 'app/templates/signup/signup.html',
             controller: 'SignUpController',
             controllerAs: 'signup_ctrl'
           }]
@@ -51,13 +51,14 @@
           children: [{
             name:'profile',
             url: '/profile',
-            templateUrl: '/app/templates/profile/profile.html',
+            templateUrl: 'app/templates/profile/profile.html',
             controller: 'ProfileController',
             controllerAs: 'profile_ctrl'
-          }, {
+          },
+          {
             name: 'users',
             url: '/users',
-            templateUrl: '/app/templates/user_list/user_list.html',
+            templateUrl: 'app/templates/user_list/user_list.html',
             controller: 'UsersController',
             controllerAs: 'users_ctrl',
             params: {
@@ -65,14 +66,27 @@
             },
             children: [{
               name: 'single_user',
-              templateUrl: '/app/templates/single_user/user.html',
+              templateUrl: 'app/templates/single_user/user.html',
               controller: 'SingleUserController',
-              controllerAs: 'user_ctrl'
+              controllerAs: 'user_ctrl',
+              resolve: {
+                detailed_user: function(userResource, $stateParams, errorHandler) {
+                  return userResource.getByEmail({email: $stateParams.email}, function (user) {
+                    return user;
+                  }, errorHandler.handle).$promise;
+                },
+                user_entries: function (detailed_user, entryResource) {
+                  return entryResource.getEntriesByUser({id: detailed_user.id}, function (entries) {
+                    return entries;
+                  }).$promise;
+                }
+              }
             }]
-          }, {
+          },
+          {
             name: 'entries',
             url: '/entries',
-            templateUrl: '/app/templates/entry_list/entries.html',
+            templateUrl: 'app/templates/entry_list/entries.html',
             controller: 'EntriesController',
             controllerAs: 'entries_ctrl',
             params: {
@@ -80,13 +94,25 @@
             },
             children: [{
               name: 'single_entry',
-              templateUrl: '/app/templates/single_entry/entry.html',
+              templateUrl: 'app/templates/single_entry/entry.html',
               controller: 'SingleEntryController',
-              controllerAs: 'entry_ctrl'
+              controllerAs: 'entry_ctrl',
+              resolve: {
+                detailed_entry: function(entryResource, $stateParams, errorHandler) {
+                  return entryResource.get({entryId: $stateParams.id}, function (entry) {
+                    return entry;
+                  }, errorHandler.handle).$promise;
+                },
+                entry_responses: function(detailed_entry, responseResource) {
+                  return responseResource.getByEntryId({entryId: detailed_entry.id}, function(responses) {
+                    return responses;
+                  }).$promise;
+                }
+              }
             },
             {
               name: 'create_entry',
-              templateUrl: '/app/templates/create_entry/create.html',
+              templateUrl: 'app/templates/create_entry/create.html',
               controller: 'createEntryController',
               controllerAs: 'create_entry_ctrl'
             }]
@@ -102,14 +128,14 @@
           children: [{
             name: 'pending-entries',
             url: '/pending_entries',
-            templateUrl: '/app/templates/pending_entries/pending_entries.html',
+            templateUrl: 'app/templates/pending_entries/pending_entries.html',
             controller: 'PendingEntriesController',
             controllerAs: 'pending_entries_ctrl'
           },
           {
             name: 'create_user',
             url: '/user_reg',
-            templateUrl: '/app/templates/create_user/user_reg.html',
+            templateUrl: 'app/templates/create_user/user_reg.html',
             controller: 'CreationController',
             controllerAs: 'user_reg_ctrl'
           }],
