@@ -30,10 +30,10 @@
         <p class="input-group">
           <input type="text" class="form-control" placeholder="Date in format YYYY-MM-DD" uib-datepicker-popup
                  ng-model="entry_ctrl.entry.date"
-                 ng-required="true" close-text="Close" required/>
+                 ng-required="true" is-open="entry_ctrl.opened" close-text="Close" required/>
 
           <span class="input-group-btn">
-            <button type="button" class="btn btn-default">
+            <button type="button" class="btn btn-default" ng-click="entry_ctrl.open()">
               <i class="glyphicon glyphicon-calendar"></i></button>
           </span>
         </p>
@@ -41,7 +41,7 @@
         <div class="form-group">
           <div class="right-inner-addon">
             <input class="form-control " name="quantity" placeholder="Hours spent"
-                   type="text" ng-model="entry_ctrl.entry.quantity" required>
+                   type="number" ng-model="entry_ctrl.entry.quantity" required>
             <span class="label label-danger" ng-show="entryForm.quantity.$error.required">Required!</span>
           </div>
         </div>

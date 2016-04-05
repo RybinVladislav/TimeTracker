@@ -13,8 +13,8 @@
           <div class="right-inner-addon">
             <input class="form-control input-lg" name="einput" placeholder="Email Address"
                    type="email" ng-model="user_reg_ctrl.email" required>
-            <span class="label label-danger" ng-show="createForm.einput.$error.required">Required!</span>
-            <span class="label label-danger" ng-show="createForm.einput.$error.email">Not valid email!</span>
+            <span class="label label-danger" ng-show="createForm.einput.$error.required && user_reg_ctrl.errors">Required!</span>
+            <span class="label label-danger" ng-show="createForm.einput.$error.email && user_reg_ctrl.errors">Not valid email!</span>
           </div>
         </div>
 
@@ -22,7 +22,7 @@
           <div class="right-inner-addon">
             <input class="form-control " name="address" placeholder="Address"
                    type="text" ng-model="user_reg_ctrl.address" required>
-            <span class="label label-danger" ng-show="createForm.address.$error.required">Required!</span>
+            <span class="label label-danger" ng-show="createForm.address.$error.required && user_reg_ctrl.errors">Required!</span>
           </div>
         </div>
 
@@ -30,7 +30,7 @@
           <div class="right-inner-addon">
             <input class="form-control " name="firstName" placeholder="First Name"
                    type="text" ng-model="user_reg_ctrl.firstName" required>
-            <span class="label label-danger" ng-show="createForm.firstName.$error.required">Required!</span>
+            <span class="label label-danger" ng-show="createForm.firstName.$error.required && user_reg_ctrl.errors">Required!</span>
           </div>
         </div>
 
@@ -38,7 +38,7 @@
           <div class="right-inner-addon">
             <input class="form-control " name="lastName" placeholder="Last Name"
                    type="text" ng-model="user_reg_ctrl.lastName" required>
-            <span class="label label-danger" ng-show="createForm.lastName.$error.required">Required!</span>
+            <span class="label label-danger" ng-show="createForm.lastName.$error.required && user_reg_ctrl.errors">Required!</span>
           </div>
         </div>
 
@@ -47,14 +47,15 @@
             <input class="form-control " name="phone" placeholder="Phone format +910 738-88-88"
                    type="text" ng-model="user_reg_ctrl.phone"
                    ng-pattern="/^(\+?(\d{1}|\d{2}|\d{3})[- ]?)?\d{3}[- ]?\d{2}[- ]?\d{2}$/" required>
-            <span class="label label-danger" ng-show="createForm.phone.$error.required">Required!</span>
+            <span class="label label-danger" ng-show="createForm.phone.$error.required && user_reg_ctrl.errors">Required!</span>
+            <span class="label label-danger" ng-show="createForm.phone.$invalid && user_reg_ctrl.errors">Not valid number!</span>
           </div>
         </div>
         <div class="form-group">
           <div class="right-inner-addon">
             <input class="form-control " name="position" placeholder="Position"
                    type="text" ng-model="user_reg_ctrl.position" required>
-            <span class="label label-danger" ng-show="createForm.position.$error.required">Required!</span>
+            <span class="label label-danger" ng-show="createForm.position.$error.required && user_reg_ctrl.errors">Required!</span>
           </div>
         </div>
         <hr>

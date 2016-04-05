@@ -6,8 +6,8 @@
           <div class="right-inner-addon">
             <input class="form-control input-lg" name="einput" placeholder="Email Address"
                    type="email" ng-model="signup_ctrl.email" required>
-            <span class="label label-danger" ng-show="signupForm.einput.$error.required">Required!</span>
-            <span class="label label-danger" ng-show="signupForm.einput.$error.email">Not valid email!</span>
+            <span class="label label-danger" ng-show="signupForm.einput.$error.required && signup_ctrl.errors">Required!</span>
+            <span class="label label-danger" ng-show="signupForm.einput.$error.email && signup_ctrl.errors">Not valid email!</span>
           </div>
         </div>
 
@@ -15,7 +15,7 @@
           <div class="right-inner-addon">
             <input class="form-control input-lg" name="pass" placeholder="Password"
                    type="password" ng-model="signup_ctrl.password" required>
-            <span class="label label-danger" ng-show="signupForm.pass.$error.required">Required!</span>
+            <span class="label label-danger" ng-show="signupForm.pass.$error.required && signup_ctrl.errors">Required!</span>
           </div>
         </div>
 

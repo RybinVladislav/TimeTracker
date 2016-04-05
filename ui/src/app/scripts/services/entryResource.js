@@ -1,7 +1,7 @@
 angular.module('timetracker')
   .factory('entryResource', function ($resource, API_URL){
     var mainURL = API_URL + "entries/:entryId";
-    var params = {entryId: "@entryId"}
+    var params = {entryId: "@entryId"};
 
     return $resource(mainURL, params, {
       'getEntriesByUser': {

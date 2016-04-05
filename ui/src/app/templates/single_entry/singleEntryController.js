@@ -1,22 +1,18 @@
 angular.module('timetracker')
-  .controller('SingleEntryController', function($localStorage, entryResource, $log,
-                                            $state, toastr, responseResource, errorHandler, $stateParams) {
+  .controller('SingleEntryController', function($localStorage, entryResource, $scope, entry_responses,
+                                            $state, toastr, errorHandler, detailed_entry) {
     var vm = this;
-    vm.entry = {};
-    vm.responses = {};
+    vm.entry = detailed_entry;
+    vm.responses = entry_responses;
     vm.edit = false;
+    vm.open = function () {
+      vm.opened = true;
+    };
 
     vm.showEditForm = function() {
       vm.edit = true;
       vm.entry.date = new Date(parseInt(vm.entry.date));
     };
-
-    entryResource.get({entryId: $stateParams.id}, function (entry) {
-      vm.entry = entry;
-      responseResource.getByEntryId({entryId: entry.id}, function(responses) {
-        vm.responses = responses;
-      }, errorHandler.handle);
-    }, errorHandler.handle);
 
     vm.noResponses = function () {
       return vm.responses.length == 0;
@@ -27,9 +23,12 @@ angular.module('timetracker')
     };
 
     vm.submitEditForm = function (form) {
-      if (form.$error.required ||  form.$invalid 
-        || /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(vm.entry.date)) {
+      if (form.$error.required ) {
         toastr.warning("Fill in the required fields");
+      } else if (form.$error.number || vm.entry.quantity <= 0 || vm.entry >= 24) {
+        toastr.warning("Please check your hours");
+      } else if (vm.entry.date === undefined) {
+        toastr.warning("Please supply date in format YYYY-MM-DD");
       } else {
         toastr.info("Loading...");
         var entry = {
@@ -44,7 +43,7 @@ angular.module('timetracker')
         entryResource.edit({entryId: vm.entry.id}, entry, function() {
           toastr.clear();
           toastr.success('You have successfully edited entry');
-          $state.go("profile");
+          $scope.$emit('entryEdited', {id: vm.entry.id, entry: entry});
         }, errorHandler.handle);
       }
     };

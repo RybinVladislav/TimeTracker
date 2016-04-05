@@ -4,14 +4,28 @@ angular.module('timetracker')
     var vm = this;
     vm.email = "";
     vm.password = "";
+    vm.errors = false;
+
+    vm.showSpanMessages = function () {
+      vm.errors = true;
+    };
+
+    vm.hideSpanMessages = function () {
+      vm.errors = false;
+    };
 
     /**
      * Submits the login form.
      */
     vm.submit = function(form) {
-      if (form.$error.required || form.$error.email) {
+      if (form.$error.required) {
         toastr.warning("Fill in the required fields");
-      } else {
+        vm.showSpanMessages();
+      } else if (form.$error.email) {
+        toastr.warning("Please check your email");
+        vm.showSpanMessages();
+      }
+      else {
         toastr.info("Loading...");
         $auth.login({identifier: vm.email, password: vm.password})
           .then(function () {
@@ -25,11 +39,13 @@ angular.module('timetracker')
               errorHandler.handle(response);
               vm.email = "";
               vm.password = "";
+              vm.hideSpanMessages();
             });
           })
           .catch(function (response) {
             errorHandler.handle(response);
             vm.password = "";
+            vm.hideSpanMessages();
           });
       }
     };

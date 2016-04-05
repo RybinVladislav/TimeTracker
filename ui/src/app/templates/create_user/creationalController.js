@@ -12,9 +12,20 @@ angular.module('timetracker')
     vm.phone = "";
     vm.position="";
 
+    vm.showSpanMessages = function () {
+      vm.errors = true;
+    };
+
     vm.submit = function (form) {
-      if (form.$error.required || form.$error.email || form.$invalid) {
+      if (form.$error.required) {
+        vm.showSpanMessages();
         toastr.warning("Fill in the required fields");
+      } else if (form.$error.email) {
+        vm.showSpanMessages();
+        toastr.warning("Please check your email");
+      } else if (form.phone.$invalid) {
+        vm.showSpanMessages();
+        toastr.warning("Please check your phone number");
       } else {
         toastr.info("Loading...");
         var user_data = {
