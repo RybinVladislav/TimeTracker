@@ -66,8 +66,8 @@
             },
             resolve: {
               user_list: function (userResource, errorHandler, toastr) {
+                toastr.info('Loading');
                 return userResource.query(function (users) {
-                  toastr.clear();
                   return users;
                 }, errorHandler.handle).$promise;
               }
