@@ -64,6 +64,14 @@
             params: {
               email: null
             },
+            resolve: {
+              user_list: function (userResource, errorHandler, toastr) {
+                return userResource.query(function (users) {
+                  toastr.clear();
+                  return users;
+                }, errorHandler.handle).$promise;
+              }
+            },
             children: [{
               name: 'single_user',
               templateUrl: 'app/templates/single_user/user.html',
@@ -118,7 +126,13 @@
             }]
           }],
           resolve: {
-            loginRequired: loginRequired
+            loginRequired: loginRequired,
+
+            entries_list: function(entryResource, $localStorage, errorHandler) {
+              return entryResource.getEntriesByUser({id: $localStorage.user.id}, function (entries) {
+               return entries.sort(keysrt('date'));
+              }, errorHandler.handle).$promise;
+            }
           }
         },
         {
@@ -207,6 +221,14 @@
       toastrConfig.positionClass = 'toast-bottom-right';
       toastrConfig.preventDuplicates = false;
       toastrConfig.progressBar = true;
+
+      function keysrt(key) {
+        return function(a,b){
+          if (a[key] > b[key]) return -1;
+          if (a[key] < b[key]) return 1;
+          return 0;
+        }
+      }
 
       function managerRequired($q, $state, $timeout, $localStorage) {
         if ($localStorage.user.userRole == 'Manager') {
