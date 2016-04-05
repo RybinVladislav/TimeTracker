@@ -5,8 +5,6 @@ angular.module('timetracker')
     vm.user = detailed_user;
     vm.entries = user_entries;
 
-    toastr.info("Loading...");
-
     function keysrt(key) {
       return function(a,b){
         if (a[key] > b[key]) return -1;

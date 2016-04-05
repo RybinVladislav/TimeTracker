@@ -1,8 +1,7 @@
 angular.module('timetracker')
-  .controller('EntriesController', function($localStorage, entryResource, $scope, $log,
-                                            $state, toastr, responseResource, errorHandler) {
+  .controller('EntriesController', function($localStorage, entries_list, $scope) {
     var vm = this;
-    vm.entries = [];
+    vm.entries = entries_list;
 
     $scope.$on('entryCreated', function (event, entry) {
       vm.entries.push(entry);
@@ -25,9 +24,4 @@ angular.module('timetracker')
       }
     }
 
-    toastr.info("Loading...");
-    entryResource.getEntriesByUser({id: $localStorage.user.id}, function (entries) {
-      toastr.clear();
-      vm.entries = entries.sort(keysrt('date'));
-    }, errorHandler.handle);
   });
